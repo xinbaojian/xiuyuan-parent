@@ -1,0 +1,43 @@
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: xiuyuan-admin
+  main:
+    allow-bean-definition-overriding: true
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+  data:
+    redis:
+      host: ${REDIS_HOST:100.91.153.120}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:9}
+      password: ${REDIS_PWD:U2FsdGVkX182WAz5KErsYO}
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 8
+          max-wait: 30s
+          max-idle: 3
+          min-idle: 1
+  mongodb:
+    uri: mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@100.91.153.120:2017/xiuyuan-db?authSource=admin
+
+logging:
+  level:
+    xin.xiuyuan.admin: debug
+    org.springframework.cloud.openfeign: debug
+    org.springframework.data.mongodb.core.convert: debug
+    io.lettuce.core.protocol: error
+    org.springframework.data.mongodb: debug
