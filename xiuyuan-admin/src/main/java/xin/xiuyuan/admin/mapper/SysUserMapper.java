@@ -1,7 +1,7 @@
 package xin.xiuyuan.admin.mapper;
 
 import org.mapstruct.*;
-import xin.xiuyuan.admin.dto.SysUserForm;
+import xin.xiuyuan.admin.dto.user.SysUserForm;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 

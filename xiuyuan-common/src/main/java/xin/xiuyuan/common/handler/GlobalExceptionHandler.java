@@ -1,5 +1,6 @@
 package xin.xiuyuan.common.handler;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -47,5 +48,20 @@ public class GlobalExceptionHandler {
         ApiResult<?> result = ApiResult.error("参数解析失败");
         result.setCode(HttpStatus.BAD_REQUEST.value());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    /**
+     * 未登录异常
+     *
+     * @param e NotLoginException
+     * @return ApiResult
+     */
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = NotLoginException.class)
+    @ResponseBody
+    public ResponseEntity<?> handlerNotLoginException(NotLoginException e) {
+        log.error("未登录", e);
+        ApiResult<?> result = ApiResult.error("未登录");
+        result.setCode(HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
     }
 }

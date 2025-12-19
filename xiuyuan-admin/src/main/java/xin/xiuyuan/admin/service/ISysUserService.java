@@ -1,8 +1,10 @@
 package xin.xiuyuan.admin.service;
 
-import xin.xiuyuan.admin.dto.SysUserCreateForm;
-import xin.xiuyuan.admin.dto.SysUserForm;
-import xin.xiuyuan.admin.dto.SysUserPageQuery;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import xin.xiuyuan.admin.dto.login.LoginForm;
+import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
+import xin.xiuyuan.admin.dto.user.SysUserForm;
+import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -47,4 +49,19 @@ public interface ISysUserService {
      * @return 用户分页列表
      */
     ApiResult<PageData<SysUserPageVO>> list(SysUserPageQuery pageQuery);
+
+    /**
+     * 登录
+     *
+     * @param form 登录表单
+     * @return ApiResult
+     */
+    ApiResult<SaTokenInfo> login(LoginForm form);
+
+    /**
+     * 登出
+     *
+     * @return ApiResult
+     */
+    ApiResult<String> logout();
 }

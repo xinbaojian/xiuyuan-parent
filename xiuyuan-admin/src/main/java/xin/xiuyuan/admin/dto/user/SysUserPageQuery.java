@@ -1,7 +1,8 @@
-package xin.xiuyuan.admin.dto;
+package xin.xiuyuan.admin.dto.user;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import xin.xiuyuan.admin.dto.BasePageQuery;
 import xin.xiuyuan.common.types.CommonStatus;
 import xin.xiuyuan.common.types.UserSex;
 import xin.xiuyuan.common.types.UserType;

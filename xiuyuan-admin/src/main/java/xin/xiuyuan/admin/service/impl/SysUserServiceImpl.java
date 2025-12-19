@@ -1,5 +1,9 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +16,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import xin.xiuyuan.admin.dto.SysUserCreateForm;
-import xin.xiuyuan.admin.dto.SysUserForm;
-import xin.xiuyuan.admin.dto.SysUserPageQuery;
+import xin.xiuyuan.admin.dto.login.LoginForm;
+import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
+import xin.xiuyuan.admin.dto.user.SysUserForm;
+import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
 import xin.xiuyuan.admin.repository.SysUserRepository;
@@ -22,6 +27,7 @@ import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
+import xin.xiuyuan.common.types.CommonStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,7 +55,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public ApiResult<String> save(SysUserCreateForm form) {
         // 校验登录账号是否已存在
-        SysUser loginNameCheck = userRepository.findByLoginName(form.getLoginName());
+        SysUser loginNameCheck = userRepository.findByLoginNameAndDeletedIsFalse(form.getLoginName());
         Assert.isNull(loginNameCheck, "登录账号已存在");
 
         // 校验邮箱是否已存在
@@ -63,7 +69,6 @@ public class SysUserServiceImpl implements ISysUserService {
             SysUser mobileCheck = userRepository.findByMobile(form.getMobile());
             Assert.isNull(mobileCheck, "手机号码已存在");
         }
-
         SysUser user = userMapper.toEntity(new SysUserForm()
                 .setDeptId(form.getDeptId())
                 .setLoginName(form.getLoginName())
@@ -75,8 +80,9 @@ public class SysUserServiceImpl implements ISysUserService {
                 .setPassword(form.getPassword())
                 .setStatus(form.getStatus())
                 .setRemark(form.getRemark()));
-        // 设置密码加密盐值 TODO: 实现密码加密逻辑
-        user.setSalt("");
+        // 设置密码加密盐值
+        user.setSalt(IdUtil.fastSimpleUUID());
+        user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(user.getPassword()) + SaSecureUtil.md5(user.getSalt())));
         userRepository.save(user);
         return ApiResult.success("新增用户成功");
     }
@@ -102,7 +108,10 @@ public class SysUserServiceImpl implements ISysUserService {
             SysUser mobileCheck = userRepository.findByMobileAndIdNot(form.getMobile(), id);
             Assert.isNull(mobileCheck, "手机号码已存在");
         }
-
+        if (StrUtil.isNotBlank(form.getPassword())) {
+            user.setSalt(IdUtil.fastSimpleUUID());
+            user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(form.getPassword()) + SaSecureUtil.md5(user.getSalt())));
+        }
         userMapper.updateEntity(form, user);
         user.setUpdateTime(LocalDateTime.now());
         userRepository.save(user);
@@ -163,5 +172,27 @@ public class SysUserServiceImpl implements ISysUserService {
         pageData.setList(voList);
         pageData.setTotal(total);
         return ApiResult.success(pageData);
+    }
+
+    @Override
+    public ApiResult<SaTokenInfo> login(LoginForm form) {
+        SysUser loginNameCheck = userRepository.findByLoginNameAndDeletedIsFalse(form.getUsername());
+        if (loginNameCheck == null) {
+            return ApiResult.error("用户不存在");
+        }
+        if (loginNameCheck.getStatus() != CommonStatus.NORMAL) {
+            return ApiResult.error("用户被禁用登录");
+        }
+        if (!loginNameCheck.getPassword().equals(SaSecureUtil.md5(SaSecureUtil.md5(form.getPassword()) + SaSecureUtil.md5(loginNameCheck.getSalt())))) {
+            return ApiResult.error("用户名或密码错误");
+        }
+        StpUtil.login(loginNameCheck.getId(), form.getLoginDevice().name());
+        return ApiResult.success(StpUtil.getTokenInfo());
+    }
+
+    @Override
+    public ApiResult<String> logout() {
+        StpUtil.logout();
+        return ApiResult.success("注销成功");
     }
 }

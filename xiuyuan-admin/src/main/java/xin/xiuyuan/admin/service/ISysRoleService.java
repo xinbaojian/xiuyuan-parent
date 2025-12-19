@@ -1,7 +1,7 @@
 package xin.xiuyuan.admin.service;
 
-import xin.xiuyuan.admin.dto.SysRoleForm;
-import xin.xiuyuan.admin.dto.SysRolePageQuery;
+import xin.xiuyuan.admin.dto.role.SysRoleForm;
+import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;

@@ -4,7 +4,7 @@ import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
-import xin.xiuyuan.admin.dto.SysConfigForm;
+import xin.xiuyuan.admin.dto.config.SysConfigForm;
 import xin.xiuyuan.admin.entity.SysConfig;
 import xin.xiuyuan.admin.vo.SysConfigPageVO;
 

@@ -1,7 +1,7 @@
 package xin.xiuyuan.admin.service;
 
-import xin.xiuyuan.admin.dto.SysConfigForm;
-import xin.xiuyuan.admin.dto.SysConfigPageQuery;
+import xin.xiuyuan.admin.dto.config.SysConfigForm;
+import xin.xiuyuan.admin.dto.config.SysConfigPageQuery;
 import xin.xiuyuan.admin.vo.SysConfigPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;

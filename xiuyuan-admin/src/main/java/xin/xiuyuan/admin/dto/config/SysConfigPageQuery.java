@@ -1,7 +1,8 @@
-package xin.xiuyuan.admin.dto;
+package xin.xiuyuan.admin.dto.config;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import xin.xiuyuan.admin.dto.BasePageQuery;
 import xin.xiuyuan.common.types.ConfigType;
 
 /**

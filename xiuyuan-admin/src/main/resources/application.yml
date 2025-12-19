@@ -3,6 +3,10 @@ server:
   shutdown: graceful
   servlet:
     context-path: /api
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
 spring:
   application:
     name: xiuyuan-admin
@@ -14,10 +18,7 @@ spring:
     multipart:
       max-file-size: 1024MB
       max-request-size: 1024MB
-    encoding:
-      charset: utf-8
-      enabled: true
-      force: true
+    # 字符编码配置已移除，使用默认配置
   data:
     redis:
       host: ${REDIS_HOST:100.91.153.120}

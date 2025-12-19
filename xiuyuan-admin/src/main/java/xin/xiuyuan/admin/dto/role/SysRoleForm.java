@@ -1,4 +1,4 @@
-package xin.xiuyuan.admin.dto;
+package xin.xiuyuan.admin.dto.role;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

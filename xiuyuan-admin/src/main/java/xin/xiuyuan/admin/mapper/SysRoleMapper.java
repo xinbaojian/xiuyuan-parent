@@ -1,7 +1,7 @@
 package xin.xiuyuan.admin.mapper;
 
 import org.mapstruct.*;
-import xin.xiuyuan.admin.dto.SysRoleForm;
+import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 

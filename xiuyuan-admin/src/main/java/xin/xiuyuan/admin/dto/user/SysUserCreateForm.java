@@ -1,4 +1,4 @@
-package xin.xiuyuan.admin.dto;
+package xin.xiuyuan.admin.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
