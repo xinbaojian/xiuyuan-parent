@@ -31,8 +31,8 @@ spring:
           max-wait: 30s
           max-idle: 3
           min-idle: 1
-  mongodb:
-    uri: mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@100.91.153.120:2017/xiuyuan-db?authSource=admin
+    mongodb:
+      uri: mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@100.91.153.120:2017/xiuyuan-db?authSource=admin
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
