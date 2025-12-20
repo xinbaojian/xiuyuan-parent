@@ -157,6 +157,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
             node.setWeight(dept.getOrderNum());
             Map<String, Object> extra = new HashMap<>(3);
             extra.put("status", dept.getStatus().name());
+            extra.put("leader", dept.getLeader());
+            extra.put("phone", dept.getEmail());
+            extra.put("email", dept.getEmail());
             extra.put("statusDesc", dept.getStatus().getDesc());
             extra.put("createTime", LocalDateTimeUtil.format(dept.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
             node.setExtra(extra);
@@ -179,6 +182,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
                     // 扩展属性 ...
                     Map<String, Object> extra = treeNode.getExtra();
                     tree.putExtra("status", extra.get("status"));
+                    tree.putExtra("leader", extra.get("leader"));
+                    tree.putExtra("phone", extra.get("phone"));
+                    tree.putExtra("email", extra.get("email"));
                     tree.putExtra("statusDesc", extra.get("statusDesc"));
                     tree.putExtra("createTime", extra.get("createTime"));
                 });
