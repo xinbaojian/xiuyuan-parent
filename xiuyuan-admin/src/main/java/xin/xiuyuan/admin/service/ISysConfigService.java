@@ -2,6 +2,7 @@ package xin.xiuyuan.admin.service;
 
 import xin.xiuyuan.admin.dto.config.SysConfigForm;
 import xin.xiuyuan.admin.dto.config.SysConfigPageQuery;
+import xin.xiuyuan.admin.entity.SysConfig;
 import xin.xiuyuan.admin.vo.SysConfigPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * @author xinbaojian
  * @create 2025-12-17
  **/
-public interface ISysConfigService {
+public interface ISysConfigService extends IBaseService<SysConfig> {
 
     /**
      * 保存系统配置

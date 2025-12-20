@@ -1,7 +1,8 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,10 @@ import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.config.SysConfigForm;
 import xin.xiuyuan.admin.dto.config.SysConfigPageQuery;
 import xin.xiuyuan.admin.entity.SysConfig;
+import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysConfigMapper;
 import xin.xiuyuan.admin.repository.SysConfigRepository;
+import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.ISysConfigService;
 import xin.xiuyuan.admin.vo.SysConfigPageVO;
 import xin.xiuyuan.common.common.ApiResult;
@@ -24,6 +27,7 @@ import xin.xiuyuan.common.common.PageData;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,9 +39,8 @@ import java.util.stream.Collectors;
  **/
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
-public class SysConfigServiceImpl implements ISysConfigService {
+public class SysConfigServiceImpl extends BaseServiceImpl<SysConfig> implements ISysConfigService {
 
     private final SysConfigRepository configRepository;
 
@@ -45,6 +48,12 @@ public class SysConfigServiceImpl implements ISysConfigService {
 
     private final SysConfigMapper configMapper;
 
+    public SysConfigServiceImpl(SysUserRepository userRepository, SysConfigRepository configRepository, MongoTemplate mongoTemplate, SysConfigMapper configMapper) {
+        super(userRepository);
+        this.configRepository = configRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.configMapper = configMapper;
+    }
 
     @Override
     public ApiResult<String> save(SysConfigForm form) {
@@ -53,6 +62,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
         Assert.isNull(configKeyCheck, "参数键名已存在");
 
         SysConfig config = configMapper.toEntity(form);
+        config.setCreateBy(StpUtil.getLoginIdAsString());
         configRepository.save(config);
         return ApiResult.success("新增系统配置成功");
     }
@@ -69,6 +79,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
 
         configMapper.updateEntity(form, config);
         config.setUpdateTime(LocalDateTime.now());
+        config.setUpdateBy(StpUtil.getLoginIdAsString());
         configRepository.save(config);
         return ApiResult.success("编辑系统配置成功!");
     }
@@ -115,7 +126,15 @@ public class SysConfigServiceImpl implements ISysConfigService {
         List<SysConfigPageVO> voList = configList.stream()
                 .map(configMapper::toVO)
                 .collect(Collectors.toList());
-
+        if (CollUtil.isNotEmpty(configList)) {
+            Map<String, SysUser> userMap = getUserMap(configList);
+            voList.forEach(vo -> {
+                if (StrUtil.isNotBlank(vo.getCreateBy()) && userMap.containsKey(vo.getCreateBy()))
+                    vo.setCreateByName(userMap.get(vo.getCreateBy()).getUsername());
+                if (StrUtil.isNotBlank(vo.getUpdateBy()) && userMap.containsKey(vo.getUpdateBy()))
+                    vo.setUpdateByName(userMap.get(vo.getUpdateBy()).getUsername());
+            });
+        }
         // 构造 PageData 对象
         PageData<SysConfigPageVO> pageData = new PageData<>();
         pageData.setList(voList);

@@ -54,6 +54,23 @@ public class SysConfigPageVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updateTime;
 
+    /**
+     * 创建者
+     */
+    private String createBy;
+    private String createByName;
+
+    /**
+     * 更新者
+     */
+    private String updateBy;
+    private String updateByName;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
     public String getConfigTypeDesc() {
         return configType == null ? null : configType.getDesc();
     }
