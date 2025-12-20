@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
 import xin.xiuyuan.admin.dto.user.SysUserForm;
 import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
+import xin.xiuyuan.admin.dto.user.UserInfoVo;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
@@ -75,5 +76,15 @@ public class SysUserController {
     @GetMapping("/page")
     public ApiResult<PageData<SysUserPageVO>> list(SysUserPageQuery pageQuery) {
         return userService.list(pageQuery);
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @return 用户信息
+     */
+    @GetMapping("/userInfo")
+    public ApiResult<UserInfoVo> getUserInfo() {
+        return userService.getUserInfo();
     }
 }

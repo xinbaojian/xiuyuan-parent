@@ -20,6 +20,7 @@ import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
 import xin.xiuyuan.admin.dto.user.SysUserForm;
 import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
+import xin.xiuyuan.admin.dto.user.UserInfoVo;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
 import xin.xiuyuan.admin.repository.SysUserRepository;
@@ -196,5 +197,17 @@ public class SysUserServiceImpl implements ISysUserService {
     public ApiResult<String> logout() {
         StpUtil.logout();
         return ApiResult.success("注销成功");
+    }
+
+    @Override
+    public ApiResult<UserInfoVo> getUserInfo() {
+        SysUser user = userRepository.findById(StpUtil.getLoginIdAsString()).orElse(null);
+        Assert.notNull(user, "用户不存在");
+        UserInfoVo infoVo = new UserInfoVo();
+        infoVo.setUsername(user.getUsername())
+                .setPermissions(List.of("admin"))
+//                .setAvatar(user.getAvatar())
+        ;
+        return ApiResult.success(infoVo);
     }
 }

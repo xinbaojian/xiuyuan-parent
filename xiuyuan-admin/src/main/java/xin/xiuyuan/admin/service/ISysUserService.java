@@ -5,6 +5,7 @@ import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
 import xin.xiuyuan.admin.dto.user.SysUserForm;
 import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
+import xin.xiuyuan.admin.dto.user.UserInfoVo;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -64,4 +65,11 @@ public interface ISysUserService {
      * @return ApiResult
      */
     ApiResult<String> logout();
+
+    /**
+     * 获取用户信息
+     *
+     * @return 用户信息
+     */
+    ApiResult<UserInfoVo> getUserInfo();
 }
