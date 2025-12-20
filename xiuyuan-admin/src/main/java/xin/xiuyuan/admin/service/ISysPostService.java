@@ -4,7 +4,10 @@ import xin.xiuyuan.admin.dto.post.SysPostForm;
 import xin.xiuyuan.admin.dto.post.SysPostPageQuery;
 import xin.xiuyuan.admin.vo.post.SysPostPageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
+
+import java.util.List;
 
 /**
  * 岗位 Service
@@ -46,4 +49,11 @@ public interface ISysPostService {
      * @return 岗位分页列表
      */
     ApiResult<PageData<SysPostPageVO>> list(SysPostPageQuery pageQuery);
+
+    /**
+     * 获取岗位下拉列表
+     *
+     * @return 岗位下拉列表
+     */
+    ApiResult<List<Option>> options();
 }

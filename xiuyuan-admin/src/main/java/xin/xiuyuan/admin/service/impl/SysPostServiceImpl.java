@@ -20,6 +20,7 @@ import xin.xiuyuan.admin.repository.SysPostRepository;
 import xin.xiuyuan.admin.service.ISysPostService;
 import xin.xiuyuan.admin.vo.post.SysPostPageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
 
 import java.time.LocalDateTime;
@@ -128,5 +129,13 @@ public class SysPostServiceImpl implements ISysPostService {
         pageData.setList(voList);
         pageData.setTotal(total);
         return ApiResult.success(pageData);
+    }
+
+    @Override
+    public ApiResult<List<Option>> options() {
+        List<Option> options = postRepository.findAll().stream()
+                .map(post -> new Option().setLabel(post.getPostName()).setValue(post.getId()))
+                .toList();
+        return ApiResult.success(options);
     }
 }

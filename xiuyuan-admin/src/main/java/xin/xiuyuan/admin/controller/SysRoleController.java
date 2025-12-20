@@ -9,7 +9,10 @@ import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
+
+import java.util.List;
 
 /**
  * 角色管理
@@ -74,5 +77,15 @@ public class SysRoleController {
     @GetMapping("/page")
     public ApiResult<PageData<SysRolePageVO>> list(SysRolePageQuery pageQuery) {
         return sysRoleService.list(pageQuery);
+    }
+
+    /**
+     * 获取角色下拉列表
+     *
+     * @return 角色下拉列表
+     */
+    @GetMapping("/options")
+    public ApiResult<List<Option>> options() {
+        return sysRoleService.options();
     }
 }

@@ -5,7 +5,10 @@ import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
+
+import java.util.List;
 
 /**
  * 角色业务层
@@ -47,4 +50,11 @@ public interface ISysRoleService extends IBaseService<SysRole> {
      * @return 角色分页列表
      */
     ApiResult<PageData<SysRolePageVO>> list(SysRolePageQuery pageQuery);
+
+    /**
+     * 获取角色下拉列表
+     *
+     * @return 角色下拉列表
+     */
+    ApiResult<List<Option>> options();
 }

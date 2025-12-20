@@ -9,7 +9,10 @@ import xin.xiuyuan.admin.dto.post.SysPostPageQuery;
 import xin.xiuyuan.admin.service.ISysPostService;
 import xin.xiuyuan.admin.vo.post.SysPostPageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
+
+import java.util.List;
 
 /**
  * 岗位管理
@@ -74,5 +77,15 @@ public class SysPostController {
     @GetMapping("/page")
     public ApiResult<PageData<SysPostPageVO>> list(SysPostPageQuery pageQuery) {
         return postService.list(pageQuery);
+    }
+
+    /**
+     * 获取岗位下拉列表
+     *
+     * @return 岗位下拉列表
+     */
+    @GetMapping("/options")
+    public ApiResult<List<Option>> options() {
+        return postService.options();
     }
 }

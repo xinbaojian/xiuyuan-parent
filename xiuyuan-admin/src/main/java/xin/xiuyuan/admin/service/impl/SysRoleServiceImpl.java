@@ -23,6 +23,7 @@ import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
+import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
 
 import java.time.LocalDateTime;
@@ -148,5 +149,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         pageData.setList(voList);
         pageData.setTotal(total);
         return ApiResult.success(pageData);
+    }
+
+    @Override
+    public ApiResult<List<Option>> options() {
+        List<Option> options = roleRepository.findAll().stream()
+                .map(role -> new Option().setLabel(role.getRoleName()).setValue(role.getId()))
+                .toList();
+        return ApiResult.success(options);
     }
 }
