@@ -83,6 +83,7 @@ public class SysUserServiceImpl implements ISysUserService {
         // 设置密码加密盐值
         user.setSalt(IdUtil.fastSimpleUUID());
         user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(user.getPassword()) + SaSecureUtil.md5(user.getSalt())));
+        user.setCreateBy(StpUtil.getLoginIdAsString());
         userRepository.save(user);
         return ApiResult.success("新增用户成功");
     }
@@ -114,6 +115,7 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         userMapper.updateEntity(form, user);
         user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateBy(StpUtil.getLoginIdAsString());
         userRepository.save(user);
         return ApiResult.success("编辑用户成功!");
     }

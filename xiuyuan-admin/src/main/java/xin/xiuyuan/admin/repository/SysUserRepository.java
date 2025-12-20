@@ -63,4 +63,5 @@ public interface SysUserRepository extends MongoRepository<SysUser, String> {
      * @return 用户信息
      */
     SysUser findByMobileAndIdNot(String mobile, String id);
+
 }

@@ -1,7 +1,8 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,10 @@ import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.entity.SysRole;
+import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysRoleMapper;
 import xin.xiuyuan.admin.repository.SysRoleRepository;
+import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
@@ -24,6 +27,7 @@ import xin.xiuyuan.common.common.PageData;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,15 +38,20 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
-public class SysRoleServiceImpl implements ISysRoleService {
+public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISysRoleService {
 
     private final SysRoleRepository roleRepository;
-
     private final MongoTemplate mongoTemplate;
-
     private final SysRoleMapper roleMapper;
+
+    public SysRoleServiceImpl(SysUserRepository userRepository, SysRoleRepository roleRepository,
+                              MongoTemplate mongoTemplate, SysRoleMapper roleMapper) {
+        super(userRepository);
+        this.roleRepository = roleRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.roleMapper = roleMapper;
+    }
 
 
     @Override
@@ -56,6 +65,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
         Assert.isNull(roleNameCheck, "角色名称已存在");
 
         SysRole role = roleMapper.toEntity(form);
+        role.setCreateBy(StpUtil.getLoginIdAsString());
         roleRepository.save(role);
         return ApiResult.success("新增角色成功");
     }
@@ -76,6 +86,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
 
         roleMapper.updateEntity(form, role);
         role.setUpdateTime(LocalDateTime.now());
+        role.setUpdateBy(StpUtil.getLoginIdAsString());
         roleRepository.save(role);
         return ApiResult.success("编辑角色成功!");
     }
@@ -115,15 +126,23 @@ public class SysRoleServiceImpl implements ISysRoleService {
         query.with(pageable).with(Sort.by(Sort.Direction.ASC, "orderNum"));
         // 执行查询
         List<SysRole> roleList = mongoTemplate.find(query, SysRole.class);
-
         // 查询总数
         long total = mongoTemplate.count(new Query(criteria), SysRole.class);
-
         // 转换为 VO 对象
         List<SysRolePageVO> voList = roleList.stream()
                 .map(roleMapper::toVO)
                 .collect(Collectors.toList());
-
+        if (CollUtil.isNotEmpty(voList)) {
+            Map<String, SysUser> userMap = super.getUserMap(roleList);
+            if (!userMap.isEmpty()) {
+                voList.forEach(vo -> {
+                    if (StrUtil.isNotBlank(vo.getCreateBy()) && userMap.containsKey(vo.getCreateBy()))
+                        vo.setCreateByName(userMap.get(vo.getCreateBy()).getUsername());
+                    if (StrUtil.isNotBlank(vo.getUpdateBy()) && userMap.containsKey(vo.getUpdateBy()))
+                        vo.setUpdateByName(userMap.get(vo.getUpdateBy()).getUsername());
+                });
+            }
+        }
         // 构造 PageData 对象
         PageData<SysRolePageVO> pageData = new PageData<>();
         pageData.setList(voList);

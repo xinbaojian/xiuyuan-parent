@@ -2,6 +2,7 @@ package xin.xiuyuan.admin.service;
 
 import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
+import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -12,7 +13,7 @@ import xin.xiuyuan.common.common.PageData;
  * @author xinbaojian
  * @date 2025-12-17
  */
-public interface ISysRoleService {
+public interface ISysRoleService extends IBaseService<SysRole> {
 
     /**
      * 保存角色
