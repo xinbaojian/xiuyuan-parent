@@ -60,6 +60,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -71,6 +72,18 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <!--                    <dockerHost>tcp://100.69.46.53:2375</dockerHost>-->
+                    <images>
+                        <image>
+                            <name>${docker.repository}${docker.image.name}</name>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>

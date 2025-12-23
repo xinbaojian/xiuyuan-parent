@@ -22,6 +22,11 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <hutool.version>5.8.42</hutool.version>
         <satoken.version>1.44.0</satoken.version>
+        <!-- docker 打包插件 -->
+        <docker.plugin.version>0.48.0</docker.plugin.version>
+        <!--docker远程仓库-->
+        <docker.repository>registry.cn-hangzhou.aliyuncs.com/xinbaojian/</docker.repository>
+        <docker.image.name>${project.artifactId}</docker.image.name>
     </properties>
     <modules>
         <module>xiuyuan-common</module>
@@ -90,6 +95,44 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.plugin.version}</version>
+                <configuration>
+                    <dockerHost>tcp://localhost:2375</dockerHost>
+                    <!-- 显示完整控制台打包输出 -->
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>${docker.repository}${docker.image.name}</name>
+                            <build>
+                                <!-- 基础镜像 -->
+                                <from>registry.cn-hangzhou.aliyuncs.com/xinbaojian/oraclejdk:21.0.8</from>
+                                <!-- 镜像标签 -->
+                                <tags>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <!-- 复制 jar 包 -->
+                                <assembly>
+                                    <targetDir>/app</targetDir>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <!-- 镜像入口点 -->
+                                <entryPoint>
+                                    <shell>java -Dfile.encoding=utf-8 -Djava.security.edg=file:/dev/./urandom -jar
+                                        /app/${project.artifactId}.jar
+                                    </shell>
+                                </entryPoint>
+                            </build>
+                        </image>
+                    </images>
+                    <authConfig>
+                        <username>xinbaojian@126.com</username>
+                        <password>C9mn3RkiVA6jWpm</password>
+                    </authConfig>
                 </configuration>
             </plugin>
         </plugins>
