@@ -3,6 +3,7 @@ package xin.xiuyuan.admin.service.impl;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,11 @@ import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
 import xin.xiuyuan.admin.dto.user.SysUserForm;
 import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
 import xin.xiuyuan.admin.dto.user.UserInfoVo;
+import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
+import xin.xiuyuan.admin.repository.SysPostRepository;
+import xin.xiuyuan.admin.repository.SysRoleRepository;
 import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
@@ -51,6 +55,10 @@ public class SysUserServiceImpl implements ISysUserService {
     private final MongoTemplate mongoTemplate;
 
     private final SysUserMapper userMapper;
+
+    private final SysPostRepository postRepository;
+
+    private final SysRoleRepository roleRepository;
 
 
     @Override
@@ -113,6 +121,17 @@ public class SysUserServiceImpl implements ISysUserService {
         if (StrUtil.isNotBlank(form.getPassword())) {
             user.setSalt(IdUtil.fastSimpleUUID());
             user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(form.getPassword()) + SaSecureUtil.md5(user.getSalt())));
+        }
+        if (StrUtil.isNotBlank(form.getPostId())) {
+            postRepository.findById(form.getPostId()).ifPresent(user::setPost);
+        }
+        if (CollUtil.isNotEmpty(form.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(form.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                user.setRoles(roles);
+            } else {
+                throw new RuntimeException("角色不存在");
+            }
         }
         userMapper.updateEntity(form, user);
         user.setUpdateTime(LocalDateTime.now());

@@ -8,6 +8,8 @@ import xin.xiuyuan.common.types.CommonStatus;
 import xin.xiuyuan.common.types.UserSex;
 import xin.xiuyuan.common.types.UserType;
 
+import java.util.List;
+
 /**
  * 用户表单对象
  *
@@ -66,6 +68,16 @@ public class SysUserForm {
      * 状态
      */
     private CommonStatus status = CommonStatus.NORMAL;
+
+    /**
+     * 岗位 ID
+     */
+    private String postId;
+
+    /**
+     * 角色 ID 列表
+     */
+    private List<String> roleIds;
 
     /**
      * 备注
