@@ -122,9 +122,7 @@
                                 </assembly>
                                 <!-- 镜像入口点 -->
                                 <entryPoint>
-                                    <shell>java -Dfile.encoding=utf-8 -Djava.security.edg=file:/dev/./urandom -jar
-                                        /app/${project.artifactId}.jar
-                                    </shell>
+                                    <shell>java -Dfile.encoding=utf-8 -Djava.security.edg=file:/dev/./urandom -jar /app/${project.artifactId}.jar</shell>
                                 </entryPoint>
                             </build>
                         </image>
