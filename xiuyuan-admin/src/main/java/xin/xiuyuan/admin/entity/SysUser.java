@@ -42,7 +42,7 @@ public class SysUser extends BaseEntity implements Serializable {
     /**
      * 部门 ID
      */
-    private String deptId;
+    private SysDept dept;
 
     /**
      * 登录账号

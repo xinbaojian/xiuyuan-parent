@@ -2,11 +2,15 @@ package xin.xiuyuan.admin.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import xin.xiuyuan.admin.entity.SysDept;
+import xin.xiuyuan.admin.entity.SysPost;
+import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.common.types.CommonStatus;
 import xin.xiuyuan.common.types.UserSex;
 import xin.xiuyuan.common.types.UserType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户分页视图对象
@@ -23,9 +27,9 @@ public class SysUserPageVO {
     private String id;
 
     /**
-     * 部门 ID
+     * 部门
      */
-    private String deptId;
+    private SysDept dept;
 
     /**
      * 登录账号
@@ -67,6 +71,16 @@ public class SysUserPageVO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
+
+    /**
+     * 岗位
+     */
+    private SysPost post;
+
+    /**
+     * 用户关联角色列表
+     */
+    private List<SysRole> roles;
 
     public String getUserTypeDesc() {
         return userType == null ? null : userType.getDesc();

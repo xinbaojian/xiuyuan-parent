@@ -18,20 +18,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.login.LoginForm;
-import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
-import xin.xiuyuan.admin.dto.user.SysUserForm;
-import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
-import xin.xiuyuan.admin.dto.user.UserInfoVo;
+import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
+import xin.xiuyuan.admin.repository.SysDeptRepository;
 import xin.xiuyuan.admin.repository.SysPostRepository;
 import xin.xiuyuan.admin.repository.SysRoleRepository;
 import xin.xiuyuan.admin.repository.SysUserRepository;
+import xin.xiuyuan.admin.service.ISysConfigService;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
+import xin.xiuyuan.common.constant.ConfigConstant;
 import xin.xiuyuan.common.types.CommonStatus;
 
 import java.time.LocalDateTime;
@@ -59,6 +59,10 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysPostRepository postRepository;
 
     private final SysRoleRepository roleRepository;
+
+    private final SysDeptRepository deptRepository;
+
+    private final ISysConfigService configService;
 
 
     @Override
@@ -92,7 +96,8 @@ public class SysUserServiceImpl implements ISysUserService {
         // 设置密码加密盐值
         user.setSalt(IdUtil.fastSimpleUUID());
         user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(user.getPassword()) + SaSecureUtil.md5(user.getSalt())));
-        user.setCreateBy(StpUtil.getLoginIdAsString());
+//        user.setCreateBy(StpUtil.getLoginIdAsString());
+        setPostRole(user, form.getDeptId(), form.getPostId(), form.getRoleIds());
         userRepository.save(user);
         return ApiResult.success("新增用户成功");
     }
@@ -122,22 +127,29 @@ public class SysUserServiceImpl implements ISysUserService {
             user.setSalt(IdUtil.fastSimpleUUID());
             user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(form.getPassword()) + SaSecureUtil.md5(user.getSalt())));
         }
-        if (StrUtil.isNotBlank(form.getPostId())) {
-            postRepository.findById(form.getPostId()).ifPresent(user::setPost);
+        setPostRole(user, form.getDeptId(), form.getPostId(), form.getRoleIds());
+        userMapper.updateEntity(form, user);
+        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateBy(StpUtil.getLoginIdAsString());
+        userRepository.save(user);
+        return ApiResult.success("编辑用户成功!");
+    }
+
+    private void setPostRole(SysUser user, String deptId, String postId, List<String> roleIds) {
+        if (StrUtil.isNotBlank(deptId)) {
+            deptRepository.findById(deptId).ifPresent(user::setDept);
         }
-        if (CollUtil.isNotEmpty(form.getRoleIds())) {
-            List<SysRole> roles = roleRepository.findAllById(form.getRoleIds());
+        if (StrUtil.isNotBlank(postId)) {
+            postRepository.findById(postId).ifPresent(user::setPost);
+        }
+        if (CollUtil.isNotEmpty(roleIds)) {
+            List<SysRole> roles = roleRepository.findAllById(roleIds);
             if (CollUtil.isNotEmpty(roles)) {
                 user.setRoles(roles);
             } else {
                 throw new RuntimeException("角色不存在");
             }
         }
-        userMapper.updateEntity(form, user);
-        user.setUpdateTime(LocalDateTime.now());
-        user.setUpdateBy(StpUtil.getLoginIdAsString());
-        userRepository.save(user);
-        return ApiResult.success("编辑用户成功!");
     }
 
     @Override
@@ -228,5 +240,20 @@ public class SysUserServiceImpl implements ISysUserService {
 //                .setAvatar(user.getAvatar())
         ;
         return ApiResult.success(infoVo);
+    }
+
+    @Override
+    public ApiResult<String> resetPwd(UserResetPwd form) {
+        SysUser user = userRepository.findById(form.getId()).orElse(null);
+        Assert.notNull(user, "用户不存在");
+        if (StrUtil.isBlank(form.getNewPassword())) {
+            configService.getConfigValue(ConfigConstant.SYS_USER_INIT_PASSWORD_KEY).ifPresent(form::setNewPassword);
+        }
+        user.setSalt(IdUtil.fastSimpleUUID());
+        user.setPassword(SaSecureUtil.md5(SaSecureUtil.md5(form.getNewPassword()) + SaSecureUtil.md5(user.getSalt())));
+        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateBy(StpUtil.getLoginIdAsString());
+        userRepository.save(user);
+        return ApiResult.success("重置密码成功");
     }
 }

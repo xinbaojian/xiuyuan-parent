@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
-import xin.xiuyuan.admin.dto.user.SysUserForm;
-import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
-import xin.xiuyuan.admin.dto.user.UserInfoVo;
+import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
@@ -86,5 +83,17 @@ public class SysUserController {
     @GetMapping("/userInfo")
     public ApiResult<UserInfoVo> getUserInfo() {
         return userService.getUserInfo();
+    }
+
+    /**
+     * 重置密码
+     */
+    @PostMapping("/resetPwd/{id}")
+    public ApiResult<String> resetPwd(@PathVariable String id, @RequestBody @Validated UserResetPwd form, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+        }
+        form.setId(id);
+        return userService.resetPwd(form);
     }
 }

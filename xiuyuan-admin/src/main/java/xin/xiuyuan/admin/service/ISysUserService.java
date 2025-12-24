@@ -2,10 +2,7 @@ package xin.xiuyuan.admin.service;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import xin.xiuyuan.admin.dto.login.LoginForm;
-import xin.xiuyuan.admin.dto.user.SysUserCreateForm;
-import xin.xiuyuan.admin.dto.user.SysUserForm;
-import xin.xiuyuan.admin.dto.user.SysUserPageQuery;
-import xin.xiuyuan.admin.dto.user.UserInfoVo;
+import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -72,4 +69,12 @@ public interface ISysUserService {
      * @return 用户信息
      */
     ApiResult<UserInfoVo> getUserInfo();
+
+    /**
+     * 重置密码
+     *
+     * @param form 重置密码表单
+     * @return ApiResult
+     */
+    ApiResult<String> resetPwd(UserResetPwd form);
 }
