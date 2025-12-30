@@ -34,13 +34,10 @@ public class AppConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-        // 为Redis序列化创建一个专门的ObjectMapper，包含类型信息
+        // 为Redis序列化创建一个专门的ObjectMapper
         ObjectMapper redisObjectMapper = new ObjectMapper();
         redisObjectMapper.registerModule(new JavaTimeModule());
         redisObjectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        // 为Redis序列化启用类型信息
-        redisObjectMapper.activateDefaultTypingAsProperty(redisObjectMapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL, "@class");
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 // 设置默认缓存过期时间

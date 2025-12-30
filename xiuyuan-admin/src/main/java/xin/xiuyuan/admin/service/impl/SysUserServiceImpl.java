@@ -318,12 +318,13 @@ public class SysUserServiceImpl implements ISysUserService {
                 List<SysMenuPermission> permissionList = permissionRepository.findAllById(
                         roles.stream()
                                 .flatMap(role -> role.getPermissionIds().stream())
-                                .filter(StrUtil::isNotEmpty)
+                                .filter(StrUtil::isNotBlank)
                                 .distinct()
                                 .toList()
                 );
                 return permissionList.stream()
                         .map(menu -> menu.getMeta().getPermissions())
+                        .filter(StrUtil::isNotBlank)
                         .distinct()
                         .toList();
             }
@@ -362,6 +363,7 @@ public class SysUserServiceImpl implements ISysUserService {
             if (CollUtil.isNotEmpty(roles)) {
                 return roles.stream()
                         .map(SysRole::getRoleKey)
+                        .filter(StrUtil::isNotBlank)
                         .distinct()
                         .collect(Collectors.toList());
             }

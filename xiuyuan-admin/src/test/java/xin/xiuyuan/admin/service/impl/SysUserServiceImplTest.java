@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import xin.xiuyuan.admin.entity.*;
 import xin.xiuyuan.admin.repository.*;
-import xin.xiuyuan.common.types.CommonStatus;
-import xin.xiuyuan.common.types.MenuType;
-import xin.xiuyuan.common.types.UserSex;
-import xin.xiuyuan.common.types.UserType;
+import xin.xiuyuan.common.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +30,9 @@ class SysUserServiceImplTest {
     @Autowired
     private SysDeptRepository deptRepository;
 
+    @Autowired
+    private SysConfigRepository configRepository;
+
     @Test
     void init() {
         log.info("初始化基础数据");
@@ -42,6 +42,7 @@ class SysUserServiceImplTest {
         initUser(roleId, postId, deptId);
         initMenu();
         setRolePermission();
+        initConfig();
     }
 
     private String initRole() {
@@ -282,5 +283,16 @@ class SysUserServiceImplTest {
         dept.setEmail("daddy@xiuyuan.xin");
         deptRepository.save(dept);
         return dept.getId();
+    }
+
+    private void initConfig() {
+        log.info("初始化系统配置");
+        SysConfig config = new SysConfig();
+        config.setConfigName("用户管理-账号初始密码");
+        config.setConfigKey("sys.user.initPassword");
+        config.setConfigValue("123456");
+        config.setRemark("用户管理-账号初始密码");
+        config.setConfigType(ConfigType.Y);
+        configRepository.save(config);
     }
 }
