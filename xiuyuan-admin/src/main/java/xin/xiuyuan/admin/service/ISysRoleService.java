@@ -4,6 +4,7 @@ import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
+import xin.xiuyuan.admin.vo.permission.SysMenuPermissionVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
@@ -57,4 +58,21 @@ public interface ISysRoleService extends IBaseService<SysRole> {
      * @return 角色下拉列表
      */
     ApiResult<List<Option>> options();
+
+    /**
+     * 设置角色权限
+     *
+     * @param roleId      角色 ID
+     * @param permissions 权限 ID 列表
+     * @return 设置结果
+     */
+    ApiResult<String> setPermission(String roleId, List<String> permissions);
+
+    /**
+     * 获取角色权限
+     *
+     * @param roleId 角色 ID
+     * @return 角色权限列表
+     */
+    ApiResult<List<SysMenuPermissionVO>> getPermission(String roleId);
 }

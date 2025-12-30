@@ -8,6 +8,7 @@ import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
+import xin.xiuyuan.admin.vo.permission.SysMenuPermissionVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
@@ -87,5 +88,28 @@ public class SysRoleController {
     @GetMapping("/options")
     public ApiResult<List<Option>> options() {
         return sysRoleService.options();
+    }
+
+    /**
+     * 设置角色权限
+     *
+     * @param id          角色 ID
+     * @param permissions 权限列表
+     * @return 设置结果
+     */
+    @PutMapping("/{id}/permission")
+    public ApiResult<String> setPermission(@PathVariable String id, @RequestBody List<String> permissions) {
+        return sysRoleService.setPermission(id, permissions);
+    }
+
+    /**
+     * 获取角色权限
+     *
+     * @param id 角色 ID
+     * @return 角色权限列表
+     */
+    @GetMapping("/{id}/permission")
+    public ApiResult<List<SysMenuPermissionVO>> getPermission(@PathVariable String id) {
+        return sysRoleService.getPermission(id);
     }
 }

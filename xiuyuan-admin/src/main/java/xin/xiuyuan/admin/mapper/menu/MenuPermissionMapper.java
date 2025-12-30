@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import xin.xiuyuan.admin.dto.menu.MenuPermissionForm;
 import xin.xiuyuan.admin.entity.SysMenuPermission;
+import xin.xiuyuan.admin.vo.permission.SysMenuPermissionVO;
 
 /**
  * 菜单权限 MapStruct 类
@@ -33,4 +34,12 @@ public interface MenuPermissionMapper {
      * @param entity 实体
      */
     void updateEntity(MenuPermissionForm form, @MappingTarget SysMenuPermission entity);
+
+    /**
+     * 实体转 VO
+     *
+     * @param entity 实体
+     * @return VO
+     */
+    SysMenuPermissionVO toVO(SysMenuPermission entity);
 }

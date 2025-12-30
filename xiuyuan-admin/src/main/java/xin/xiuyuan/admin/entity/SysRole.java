@@ -10,6 +10,7 @@ import xin.xiuyuan.common.types.CommonStatus;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 角色信息表
@@ -51,4 +52,9 @@ public class SysRole extends BaseEntity implements Serializable {
      * 角色状态
      */
     private CommonStatus status = CommonStatus.NORMAL;
+
+    /**
+     * 角色权限
+     */
+    private List<SysMenuPermission> permissions;
 }

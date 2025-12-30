@@ -15,18 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
+import xin.xiuyuan.admin.entity.SysMenuPermission;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysRoleMapper;
+import xin.xiuyuan.admin.mapper.menu.MenuPermissionMapper;
+import xin.xiuyuan.admin.repository.MenuPermissionRepository;
 import xin.xiuyuan.admin.repository.SysRoleRepository;
 import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
+import xin.xiuyuan.admin.vo.permission.SysMenuPermissionVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,13 +50,18 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     private final SysRoleRepository roleRepository;
     private final MongoTemplate mongoTemplate;
     private final SysRoleMapper roleMapper;
+    private final MenuPermissionMapper menuPermissionMapper;
+
+    private final MenuPermissionRepository menuPermissionRepository;
 
     public SysRoleServiceImpl(SysUserRepository userRepository, SysRoleRepository roleRepository,
-                              MongoTemplate mongoTemplate, SysRoleMapper roleMapper) {
+                              MongoTemplate mongoTemplate, SysRoleMapper roleMapper, MenuPermissionMapper menuPermissionMapper, MenuPermissionRepository menuPermissionRepository) {
         super(userRepository);
         this.roleRepository = roleRepository;
         this.mongoTemplate = mongoTemplate;
         this.roleMapper = roleMapper;
+        this.menuPermissionMapper = menuPermissionMapper;
+        this.menuPermissionRepository = menuPermissionRepository;
     }
 
 
@@ -157,5 +167,29 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
                 .map(role -> new Option().setLabel(role.getRoleName()).setValue(role.getId()))
                 .toList();
         return ApiResult.success(options);
+    }
+
+    @Override
+    public ApiResult<String> setPermission(String roleId, List<String> permissions) {
+        SysRole role = roleRepository.findById(roleId).orElse(null);
+        Assert.notNull(role, "角色不存在");
+        Assert.isTrue(CollUtil.isNotEmpty(permissions), "请选择权限");
+        List<SysMenuPermission> menuPermissionList = menuPermissionRepository.findAllById(permissions);
+        role.setPermissions(menuPermissionList);
+        roleRepository.save(role);
+        return ApiResult.success("设置权限成功");
+    }
+
+    @Override
+    public ApiResult<List<SysMenuPermissionVO>> getPermission(String roleId) {
+        SysRole role = roleRepository.findById(roleId).orElse(null);
+        if (role != null && CollUtil.isNotEmpty(role.getPermissions())) {
+            return ApiResult.success(
+                    role.getPermissions().stream()
+                            .map(menuPermissionMapper::toVO)
+                            .collect(Collectors.toList())
+            );
+        }
+        return ApiResult.success(new ArrayList<>());
     }
 }

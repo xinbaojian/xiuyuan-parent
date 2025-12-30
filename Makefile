@@ -9,7 +9,9 @@ install: clean
 	mvn install -e -U -DskipTests
 
 build: install
+	cd xiuyuan-admin && mvn docker:build
+push:
 	cd xiuyuan-admin && mvn docker:build docker:push
 
 
-.PHONY: clean compile package install
+.PHONY: clean compile package install build push
