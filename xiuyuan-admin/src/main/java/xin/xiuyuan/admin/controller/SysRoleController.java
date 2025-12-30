@@ -39,7 +39,7 @@ public class SysRoleController {
      * @return 新增结果
      */
     @PostMapping
-    @SaCheckPermission(value = "menu:setting:role:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @SaCheckPermission(value = "setting:role:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> save(@RequestBody @Validated SysRoleForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -55,7 +55,7 @@ public class SysRoleController {
      * @return 修改结果
      */
     @PostMapping("/{id}")
-    @SaCheckPermission(value = "menu:setting:role:update", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @SaCheckPermission(value = "setting:role:update", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysRoleForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -70,7 +70,7 @@ public class SysRoleController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
-    @SaCheckPermission(value = "menu:setting:role:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @SaCheckPermission(value = "setting:role:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> delete(@PathVariable String id) {
         return sysRoleService.delete(id);
     }
@@ -82,7 +82,7 @@ public class SysRoleController {
      * @return 角色分页列表
      */
     @GetMapping("/page")
-    @SaCheckPermission(value = "menu:setting:role:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @SaCheckPermission(value = "setting:role:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<PageData<SysRolePageVO>> list(SysRolePageQuery pageQuery) {
         return sysRoleService.list(pageQuery);
     }
@@ -105,7 +105,7 @@ public class SysRoleController {
      * @return 设置结果
      */
     @PutMapping("/{id}/permission")
-    @SaCheckPermission(value = "menu:setting:role:permission:set", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @SaCheckPermission(value = "setting:role:permission:set", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> setPermission(@PathVariable String id, @RequestBody List<String> permissions) {
         return sysRoleService.setPermission(id, permissions);
     }

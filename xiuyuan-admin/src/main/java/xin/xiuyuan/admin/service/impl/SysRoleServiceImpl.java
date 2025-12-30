@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -170,12 +171,12 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     }
 
     @Override
+    @CacheEvict(value = "user:permissions", allEntries = true)
     public ApiResult<String> setPermission(String roleId, List<String> permissions) {
         SysRole role = roleRepository.findById(roleId).orElse(null);
         Assert.notNull(role, "角色不存在");
         Assert.isTrue(CollUtil.isNotEmpty(permissions), "请选择权限");
-        List<SysMenuPermission> menuPermissionList = menuPermissionRepository.findAllById(permissions);
-        role.setPermissions(menuPermissionList);
+        role.setPermissionIds(permissions);
         roleRepository.save(role);
         return ApiResult.success("设置权限成功");
     }
@@ -183,9 +184,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     @Override
     public ApiResult<List<SysMenuPermissionVO>> getPermission(String roleId) {
         SysRole role = roleRepository.findById(roleId).orElse(null);
-        if (role != null && CollUtil.isNotEmpty(role.getPermissions())) {
+        if (role != null && CollUtil.isNotEmpty(role.getPermissionIds())) {
+            List<SysMenuPermission> menuPermissionList = menuPermissionRepository.findAllById(role.getPermissionIds());
             return ApiResult.success(
-                    role.getPermissions().stream()
+                    menuPermissionList.stream()
                             .map(menuPermissionMapper::toVO)
                             .collect(Collectors.toList())
             );
@@ -198,8 +200,9 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         List<SysRole> roleList = roleRepository.findAllById(List.of(roleId));
         if (CollUtil.isNotEmpty(roleList)) {
             return roleList
-                    .stream().flatMap(role -> role.getPermissions().stream())
-                    .map(mp -> mp.getMeta().getPermissions())
+                    .stream()
+                    .filter(role -> CollUtil.isNotEmpty(role.getPermissionIds()))
+                    .flatMap(role -> role.getPermissionIds().stream())
                     .toList();
         }
         return List.of();

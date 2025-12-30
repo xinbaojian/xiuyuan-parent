@@ -42,7 +42,7 @@ public class SysUser extends BaseEntity implements Serializable {
     /**
      * 部门 ID
      */
-    private SysDept dept;
+    private String deptId;
 
     /**
      * 登录账号
@@ -117,12 +117,12 @@ public class SysUser extends BaseEntity implements Serializable {
     private LocalDateTime pwdUpdateDate;
 
     /**
-     * 岗位
+     * 岗位 ID
      */
-    private SysPost post;
+    private String postId;
 
     /**
-     * 用户关联角色列表
+     * 用户关联角色 ID 列表
      */
-    private List<SysRole> roles;
+    private List<String> roleIds;
 }

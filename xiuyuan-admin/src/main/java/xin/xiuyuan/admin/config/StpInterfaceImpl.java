@@ -6,8 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import xin.xiuyuan.admin.entity.SysRole;
-import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.service.ISysUserService;
 
 import java.util.ArrayList;
@@ -38,11 +36,9 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object o, String s) {
         if (o instanceof String && StrUtil.isNotBlank(o.toString())) {
-            SysUser user = userService.findById(o.toString());
-            if (user != null && CollUtil.isNotEmpty(user.getRoles())) {
-                return user.getRoles().stream()
-                        .map(SysRole::getRoleKey)
-                        .toList();
+            List<String> roleKeys = userService.getRoleKeys(o.toString());
+            if (CollUtil.isNotEmpty(roleKeys)) {
+                return roleKeys;
             }
         }
         return List.of();

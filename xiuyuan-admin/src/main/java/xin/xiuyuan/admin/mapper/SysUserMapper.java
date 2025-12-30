@@ -34,6 +34,9 @@ public interface SysUserMapper {
     @Mapping(target = "pwdUpdateDate", ignore = true)
     @Mapping(target = "salt", ignore = true)
     @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "deptId", ignore = true)
+    @Mapping(target = "postId", ignore = true)
+    @Mapping(target = "roleIds", ignore = true)
     SysUser toEntity(SysUserForm form);
 
     /**
@@ -63,5 +66,8 @@ public interface SysUserMapper {
     @Mapping(target = "salt", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "deptId", ignore = true)
+    @Mapping(target = "postId", ignore = true)
+    @Mapping(target = "roleIds", ignore = true)
     void updateEntity(SysUserForm form, @MappingTarget SysUser user);
 }

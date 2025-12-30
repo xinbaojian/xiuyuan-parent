@@ -1,6 +1,7 @@
 package xin.xiuyuan.admin.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.hutool.core.lang.tree.Tree;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -12,6 +13,7 @@ import xin.xiuyuan.admin.service.ISysDeptService;
 import xin.xiuyuan.admin.vo.dept.SysDeptPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
+import xin.xiuyuan.common.constant.RoleConstant;
 import xin.xiuyuan.common.types.CommonStatus;
 
 import java.util.List;
@@ -78,6 +80,7 @@ public class SysDeptController {
      * @return 部门分页列表
      */
     @GetMapping("/page")
+    @SaCheckPermission(value = "setting:dept:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<PageData<SysDeptPageVO>> list(SysDeptPageQuery pageQuery) {
         return deptService.list(pageQuery);
     }

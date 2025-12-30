@@ -92,6 +92,7 @@ public class SysMenuPermission extends BaseEntity implements Serializable {
      * 元数据
      */
     @Data
+    @Accessors(chain = true)
     public static class Meta {
 
         /**

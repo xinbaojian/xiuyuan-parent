@@ -54,7 +54,7 @@ public class SysRole extends BaseEntity implements Serializable {
     private CommonStatus status = CommonStatus.NORMAL;
 
     /**
-     * 角色权限
+     * 菜单权限 ID 列表
      */
-    private List<SysMenuPermission> permissions;
+    private List<String> permissionIds;
 }

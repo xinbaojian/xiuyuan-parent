@@ -21,14 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.*;
-import xin.xiuyuan.admin.entity.SysMenuPermission;
-import xin.xiuyuan.admin.entity.SysRole;
-import xin.xiuyuan.admin.entity.SysUser;
+import xin.xiuyuan.admin.entity.*;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
-import xin.xiuyuan.admin.repository.SysDeptRepository;
-import xin.xiuyuan.admin.repository.SysPostRepository;
-import xin.xiuyuan.admin.repository.SysRoleRepository;
-import xin.xiuyuan.admin.repository.SysUserRepository;
+import xin.xiuyuan.admin.repository.*;
 import xin.xiuyuan.admin.service.ISysConfigService;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
@@ -40,6 +35,7 @@ import xin.xiuyuan.common.types.CommonStatus;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +63,8 @@ public class SysUserServiceImpl implements ISysUserService {
     private final SysDeptRepository deptRepository;
 
     private final ISysConfigService configService;
+
+    private final MenuPermissionRepository permissionRepository;
 
 
     @Override
@@ -142,15 +140,15 @@ public class SysUserServiceImpl implements ISysUserService {
 
     private void setPostRole(SysUser user, String deptId, String postId, List<String> roleIds) {
         if (StrUtil.isNotBlank(deptId)) {
-            deptRepository.findById(deptId).ifPresent(user::setDept);
+            deptRepository.findById(deptId).ifPresent(d -> user.setDeptId(d.getId()));
         }
         if (StrUtil.isNotBlank(postId)) {
-            postRepository.findById(postId).ifPresent(user::setPost);
+            postRepository.findById(postId).ifPresent(p -> user.setPostId(p.getId()));
         }
         if (CollUtil.isNotEmpty(roleIds)) {
             List<SysRole> roles = roleRepository.findAllById(roleIds);
             if (CollUtil.isNotEmpty(roles)) {
-                user.setRoles(roles);
+                user.setRoleIds(roleIds);
             } else {
                 throw new RuntimeException("角色不存在");
             }
@@ -201,9 +199,48 @@ public class SysUserServiceImpl implements ISysUserService {
         // 查询总数
         long total = mongoTemplate.count(new Query(criteria), SysUser.class);
 
-        // 转换为 VO 对象
+        // 收集所有关联ID
+        List<String> deptIds = userList.stream().map(SysUser::getDeptId).filter(StrUtil::isNotBlank).distinct().toList();
+        List<String> postIds = userList.stream().map(SysUser::getPostId).filter(StrUtil::isNotBlank).distinct().toList();
+        List<String> roleIds = userList.stream()
+                .filter(u -> CollUtil.isNotEmpty(u.getRoleIds()))
+                .flatMap(u -> u.getRoleIds().stream())
+                .distinct()
+                .toList();
+
+        // 批量查询关联数据
+        Map<String, SysDept> deptMap = CollUtil.isNotEmpty(deptIds)
+                ? deptRepository.findAllById(deptIds).stream().collect(Collectors.toMap(SysDept::getId, d -> d))
+                : Collections.emptyMap();
+        Map<String, SysPost> postMap = CollUtil.isNotEmpty(postIds)
+                ? postRepository.findAllById(postIds).stream().collect(Collectors.toMap(SysPost::getId, p -> p))
+                : Collections.emptyMap();
+        Map<String, SysRole> roleMap = CollUtil.isNotEmpty(roleIds)
+                ? roleRepository.findAllById(roleIds).stream().collect(Collectors.toMap(SysRole::getId, r -> r))
+                : Collections.emptyMap();
+
+        // 转换为 VO 对象并填充关联数据
+        Map<String, SysDept> finalDeptMap = deptMap;
+        Map<String, SysPost> finalPostMap = postMap;
+        Map<String, SysRole> finalRoleMap = roleMap;
         List<SysUserPageVO> voList = userList.stream()
-                .map(userMapper::toVO)
+                .map(user -> {
+                    SysUserPageVO vo = userMapper.toVO(user);
+                    if (StrUtil.isNotBlank(user.getDeptId())) {
+                        vo.setDept(finalDeptMap.get(user.getDeptId()));
+                    }
+                    if (StrUtil.isNotBlank(user.getPostId())) {
+                        vo.setPost(finalPostMap.get(user.getPostId()));
+                    }
+                    if (CollUtil.isNotEmpty(user.getRoleIds())) {
+                        List<SysRole> roles = user.getRoleIds().stream()
+                                .map(finalRoleMap::get)
+                                .filter(r -> r != null)
+                                .collect(Collectors.toList());
+                        vo.setRoles(roles);
+                    }
+                    return vo;
+                })
                 .collect(Collectors.toList());
 
         // 构造 PageData 对象
@@ -275,14 +312,21 @@ public class SysUserServiceImpl implements ISysUserService {
         if (user == null) {
             return null;
         }
-        if (CollUtil.isNotEmpty(user.getRoles())) {
-            return user.getRoles().stream()
-                    .flatMap(role -> role.getPermissions().stream())
-                    .filter(p -> p.getMeta() != null && CollUtil.isNotEmpty(Collections.singleton(p.getMeta().getPermissions())))
-                    .map(p -> p.getMeta().getPermissions())
-                    .filter(StrUtil::isNotEmpty)
-                    .distinct()
-                    .collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(user.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(user.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                List<SysMenuPermission> permissionList = permissionRepository.findAllById(
+                        roles.stream()
+                                .flatMap(role -> role.getPermissionIds().stream())
+                                .filter(StrUtil::isNotEmpty)
+                                .distinct()
+                                .toList()
+                );
+                return permissionList.stream()
+                        .map(menu -> menu.getMeta().getPermissions())
+                        .distinct()
+                        .toList();
+            }
         }
         return null;
     }
@@ -293,13 +337,34 @@ public class SysUserServiceImpl implements ISysUserService {
         if (user == null) {
             return null;
         }
-        if (CollUtil.isNotEmpty(user.getRoles())) {
-            return user.getRoles().stream()
-                    .flatMap(role -> role.getPermissions().stream())
-                    .map(SysMenuPermission::getId)
-                    .filter(StrUtil::isNotEmpty)
-                    .distinct()
-                    .collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(user.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(user.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                return roles.stream()
+                        .filter(role -> CollUtil.isNotEmpty(role.getPermissionIds()))
+                        .flatMap(role -> role.getPermissionIds().stream())
+                        .filter(StrUtil::isNotEmpty)
+                        .distinct()
+                        .collect(Collectors.toList());
+            }
+        }
+        return List.of();
+    }
+
+    @Override
+    public List<String> getRoleKeys(String id) {
+        SysUser user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        if (CollUtil.isNotEmpty(user.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(user.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                return roles.stream()
+                        .map(SysRole::getRoleKey)
+                        .distinct()
+                        .collect(Collectors.toList());
+            }
         }
         return List.of();
     }

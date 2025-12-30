@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,7 +18,6 @@ import xin.xiuyuan.admin.entity.SysMenuPermission;
 import xin.xiuyuan.admin.mapper.menu.MenuPermissionMapper;
 import xin.xiuyuan.admin.repository.MenuPermissionRepository;
 import xin.xiuyuan.admin.service.IMenuPermissionService;
-import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.menu.MenuTreeVO;
 import xin.xiuyuan.common.common.ApiResult;
@@ -69,6 +69,7 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
     }
 
     @Override
+    @CacheEvict(value = "user:permissions", allEntries = true)
     public ApiResult<String> update(String id, MenuPermissionForm form) {
         // 校验菜单 ID 是否存在
         SysMenuPermission sysMenuPermission = menuPermissionRepository.findById(id).orElse(null);
