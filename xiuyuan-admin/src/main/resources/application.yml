@@ -21,10 +21,10 @@ spring:
     # 字符编码配置已移除，使用默认配置
   data:
     redis:
-      host: ${REDIS_HOST:100.91.153.120}
+      host: ${REDIS_HOST:100.69.46.53}
       port: ${REDIS_PORT:6379}
       database: ${REDIS_DATABASE:9}
-      password: ${REDIS_PWD:U2FsdGVkX182WAz5KErsYO}
+      password: ${REDIS_PWD:hzcldev888}
       lettuce:
         pool:
           enabled: true

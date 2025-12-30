@@ -61,6 +61,7 @@ public interface SysUserMapper {
     @Mapping(target = "loginDate", ignore = true)
     @Mapping(target = "pwdUpdateDate", ignore = true)
     @Mapping(target = "salt", ignore = true)
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "avatar", ignore = true)
     void updateEntity(SysUserForm form, @MappingTarget SysUser user);
 }

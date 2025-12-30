@@ -1,5 +1,7 @@
 package xin.xiuyuan.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +11,7 @@ import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
+import xin.xiuyuan.common.constant.RoleConstant;
 
 /**
  * 用户管理
@@ -31,6 +34,7 @@ public class SysUserController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission(value = "user:setting:user:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> save(@RequestBody @Validated SysUserCreateForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -46,6 +50,7 @@ public class SysUserController {
      * @return 修改结果
      */
     @PostMapping("/{id}")
+    @SaCheckPermission(value = "user:setting:user:update", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysUserForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -60,6 +65,7 @@ public class SysUserController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission(value = "user:setting:user:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> delete(@PathVariable String id) {
         return userService.delete(id);
     }
@@ -71,6 +77,7 @@ public class SysUserController {
      * @return 用户分页列表
      */
     @GetMapping("/page")
+    @SaCheckPermission(value = "user:setting:user:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<PageData<SysUserPageVO>> list(SysUserPageQuery pageQuery) {
         return userService.list(pageQuery);
     }
@@ -89,6 +96,7 @@ public class SysUserController {
      * 重置密码
      */
     @PostMapping("/resetPwd/{id}")
+    @SaCheckPermission(value = "user:setting:user:resetPwd", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> resetPwd(@PathVariable String id, @RequestBody @Validated UserResetPwd form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());

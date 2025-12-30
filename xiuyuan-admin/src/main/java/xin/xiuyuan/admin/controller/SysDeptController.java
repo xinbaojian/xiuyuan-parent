@@ -1,5 +1,6 @@
 package xin.xiuyuan.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -36,6 +37,7 @@ public class SysDeptController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission(value = "sys:dept:add")
     public ApiResult<String> save(@RequestBody @Validated SysDeptForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());

@@ -1,6 +1,7 @@
 package xin.xiuyuan.common.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -63,5 +64,20 @@ public class GlobalExceptionHandler {
         ApiResult<?> result = ApiResult.error("未登录");
         result.setCode(HttpStatus.UNAUTHORIZED.value());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+    }
+
+    /**
+     * 没有权限异常
+     *
+     * @param e NotPermissionException
+     * @return ApiResult
+     */
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(value = NotPermissionException.class)
+    public ResponseEntity<?> handlerNotPermissionException(NotPermissionException e) {
+        log.error("没有权限", e);
+        ApiResult<?> result = ApiResult.error("没有权限");
+        result.setCode(HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(result);
     }
 }

@@ -8,6 +8,8 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,6 +37,7 @@ import xin.xiuyuan.common.constant.ConfigConstant;
 import xin.xiuyuan.common.types.CommonStatus;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,6 +106,7 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
+    @CacheEvict(value = {"user", "user:permissions"}, key = "#id")
     public ApiResult<String> update(String id, SysUserForm form) {
         // 校验用户 ID 是否存在
         SysUser user = userRepository.findById(id).orElse(null);
@@ -255,5 +259,30 @@ public class SysUserServiceImpl implements ISysUserService {
         user.setUpdateBy(StpUtil.getLoginIdAsString());
         userRepository.save(user);
         return ApiResult.success("重置密码成功");
+    }
+
+    @Override
+    @Cacheable(value = "user", key = "#id", unless = "#result == null")
+    public SysUser findById(String id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Cacheable(value = "user:permissions", key = "#id", unless = "#result == null")
+    public List<String> getPermissionList(String id) {
+        SysUser user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        if (CollUtil.isNotEmpty(user.getRoles())) {
+            return user.getRoles().stream()
+                    .flatMap(role -> role.getPermissions().stream())
+                    .filter(p -> p.getMeta() != null && CollUtil.isNotEmpty(Collections.singleton(p.getMeta().getPermissions())))
+                    .map(p -> p.getMeta().getPermissions())
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

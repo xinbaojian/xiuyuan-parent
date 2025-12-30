@@ -3,9 +3,12 @@ package xin.xiuyuan.admin.service;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.*;
+import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
+
+import java.util.List;
 
 /**
  * 用户 Service
@@ -77,4 +80,20 @@ public interface ISysUserService {
      * @return ApiResult
      */
     ApiResult<String> resetPwd(UserResetPwd form);
+
+    /**
+     * 根据 ID 查询用户
+     *
+     * @param id 用户 ID
+     * @return 用户
+     */
+    SysUser findById(String id);
+
+    /**
+     * 获取用户权限列表
+     *
+     * @param id 用户 ID
+     * @return 权限列表
+     */
+    List<String> getPermissionList(String id);
 }

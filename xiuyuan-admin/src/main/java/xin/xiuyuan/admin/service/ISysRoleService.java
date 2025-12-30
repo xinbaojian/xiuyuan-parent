@@ -75,4 +75,12 @@ public interface ISysRoleService extends IBaseService<SysRole> {
      * @return 角色权限列表
      */
     ApiResult<List<SysMenuPermissionVO>> getPermission(String roleId);
+
+    /**
+     * 获取角色权限ID列表
+     *
+     * @param roleIds 角色 ID 数组
+     * @return 角色权限列表
+     */
+    List<String> getPermissionsList(String... roleIds);
 }

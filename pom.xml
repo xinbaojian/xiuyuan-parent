@@ -71,6 +71,11 @@
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
                 <version>${satoken.version}</version>
             </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-template</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

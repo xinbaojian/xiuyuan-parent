@@ -192,4 +192,16 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         }
         return ApiResult.success(new ArrayList<>());
     }
+
+    @Override
+    public List<String> getPermissionsList(String... roleId) {
+        List<SysRole> roleList = roleRepository.findAllById(List.of(roleId));
+        if (CollUtil.isNotEmpty(roleList)) {
+            return roleList
+                    .stream().flatMap(role -> role.getPermissions().stream())
+                    .map(mp -> mp.getMeta().getPermissions())
+                    .toList();
+        }
+        return List.of();
+    }
 }

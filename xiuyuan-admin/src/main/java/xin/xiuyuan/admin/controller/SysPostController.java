@@ -1,5 +1,7 @@
 package xin.xiuyuan.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +13,7 @@ import xin.xiuyuan.admin.vo.post.SysPostPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.Option;
 import xin.xiuyuan.common.common.PageData;
+import xin.xiuyuan.common.constant.RoleConstant;
 
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class SysPostController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission(value = "setting:post:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> save(@RequestBody @Validated SysPostForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -50,6 +54,7 @@ public class SysPostController {
      * @return 修改结果
      */
     @PostMapping("/{id}")
+    @SaCheckPermission(value = "setting:post:edit", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysPostForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -64,6 +69,7 @@ public class SysPostController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission(value = "setting:post:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<String> delete(@PathVariable String id) {
         return postService.delete(id);
     }
@@ -75,6 +81,7 @@ public class SysPostController {
      * @return 岗位分页列表
      */
     @GetMapping("/page")
+    @SaCheckPermission(value = "setting:post:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
     public ApiResult<PageData<SysPostPageVO>> list(SysPostPageQuery pageQuery) {
         return postService.list(pageQuery);
     }
