@@ -1,5 +1,7 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import xin.xiuyuan.admin.entity.SysMenuPermission;
 import xin.xiuyuan.admin.mapper.menu.MenuPermissionMapper;
 import xin.xiuyuan.admin.repository.MenuPermissionRepository;
 import xin.xiuyuan.admin.service.IMenuPermissionService;
+import xin.xiuyuan.admin.service.ISysRoleService;
+import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.menu.MenuTreeVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.types.CommonStatus;
@@ -41,6 +45,8 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
     private final MongoTemplate mongoTemplate;
 
     private final MenuPermissionMapper menuPermissionMapper;
+
+    private final ISysUserService userService;
 
     @Override
     public ApiResult<String> save(MenuPermissionForm form) {
@@ -180,7 +186,12 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
 
     @Override
     public ApiResult<List<MenuTreeVO>> getCurrentMenuTree() {
+        List<String> permissionIdList = userService.getPermissionIdList(StpUtil.getLoginIdAsString());
+        if (CollUtil.isEmpty(permissionIdList)){
+            return ApiResult.success(new ArrayList<>());
+        }
         Criteria criteria = Criteria.where("delFlag").is(false);
+        criteria.and("id").in(permissionIdList);
         criteria.and("status").is(CommonStatus.NORMAL);
         criteria.and("type").is(MenuType.MENU);
         Query query = new Query(criteria).with(Sort.by(Sort.Direction.ASC, "orderNum"));

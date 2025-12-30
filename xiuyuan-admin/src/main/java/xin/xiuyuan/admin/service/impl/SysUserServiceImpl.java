@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.*;
+import xin.xiuyuan.admin.entity.SysMenuPermission;
 import xin.xiuyuan.admin.entity.SysRole;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.mapper.SysUserMapper;
@@ -284,5 +285,22 @@ public class SysUserServiceImpl implements ISysUserService {
                     .collect(Collectors.toList());
         }
         return null;
+    }
+
+    @Override
+    public List<String> getPermissionIdList(String id) {
+        SysUser user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        if (CollUtil.isNotEmpty(user.getRoles())) {
+            return user.getRoles().stream()
+                    .flatMap(role -> role.getPermissions().stream())
+                    .map(SysMenuPermission::getId)
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 }

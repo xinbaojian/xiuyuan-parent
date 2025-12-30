@@ -90,7 +90,7 @@ db.getCollection('sysMenuPermission').insertMany(
             "meta": {
                 "title": "用户管理",
                 "defaultOpen": false,
-                "permissions": "user:setting:user:list"
+                "permissions": "setting:user:list"
                 },
             "name": "User",
             "orderNum": 1,

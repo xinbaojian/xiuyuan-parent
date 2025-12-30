@@ -96,4 +96,12 @@ public interface ISysUserService {
      * @return 权限列表
      */
     List<String> getPermissionList(String id);
+
+    /**
+     * 获取用户权限ID列表
+     *
+     * @param id 用户 ID
+     * @return 权限ID列表
+     */
+    List<String> getPermissionIdList(String id);
 }
