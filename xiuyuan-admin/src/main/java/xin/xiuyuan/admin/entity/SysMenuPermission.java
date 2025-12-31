@@ -79,6 +79,11 @@ public class SysMenuPermission extends BaseEntity implements Serializable {
     private CommonStatus status = CommonStatus.NORMAL;
 
     /**
+     * 是否隐藏
+     */
+    private Boolean hidden = false;
+
+    /**
      * 删除标志
      */
     private Boolean delFlag = false;

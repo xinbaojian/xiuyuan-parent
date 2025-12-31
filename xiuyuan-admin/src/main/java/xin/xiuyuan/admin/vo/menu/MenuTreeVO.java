@@ -70,6 +70,11 @@ public class MenuTreeVO {
     private CommonStatus status = CommonStatus.NORMAL;
 
     /**
+     * 是否隐藏
+     */
+    private Boolean hidden = false;
+
+    /**
      * 显示顺序
      */
     private Integer orderNum = 0;

@@ -64,6 +64,11 @@ public class MenuPermissionForm {
     private CommonStatus status = CommonStatus.NORMAL;
 
     /**
+     * 是否隐藏
+     */
+    private Boolean hidden = false;
+
+    /**
      * 标题
      */
     @NotBlank(message = "菜单标题不能为空")

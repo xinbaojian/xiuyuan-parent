@@ -172,6 +172,7 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
         vo.setName(menu.getName());
         vo.setAlwaysShow(menu.getAlwaysShow());
         vo.setStatus(menu.getStatus());
+        vo.setHidden(menu.getHidden());
         vo.setOrderNum(menu.getOrderNum());
         if (menu.getMeta() != null) {
             MenuTreeVO.Meta meta = new MenuTreeVO.Meta();
