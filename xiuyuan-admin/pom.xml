@@ -50,6 +50,12 @@
             <artifactId>xiuyuan-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <!-- 文件存储模块 -->
+        <dependency>
+            <groupId>xin.xiuyuan</groupId>
+            <artifactId>xiuyuan-file-storage</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <!-- MapStruct 依赖 -->
         <dependency>
             <groupId>org.mapstruct</groupId>

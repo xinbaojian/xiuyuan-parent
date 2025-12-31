@@ -1,0 +1,58 @@
+# ============================================
+# 文件存储配置示例
+# ============================================
+
+file-storage:
+  # 是否启用文件存储服务（默认：true）
+  enabled: true
+
+  # 存储类型：rustfs, minio, s3, aliyun-oss, local
+  type: rustfs
+
+  # 默认存储桶名称
+  bucket-name: xiuyuan
+
+  # 基础路径（会作为所有文件路径的前缀）
+  base-path: ""
+
+  # 自定义域名（可选，用于访问文件，如：https://cdn.example.com）
+  custom-domain: ""
+
+  # S3 协议兼容配置（用于 RustFS、MinIO、S3）
+  s3:
+    # 访问密钥 ID
+    access-key-id: your-access-key-id
+
+    # 访问密钥 Secret
+    secret-access-key: your-secret-access-key
+
+    # 服务端点
+    # RustFS 示例：http://localhost:9000
+    # MinIO 示例：http://localhost:9000
+    # AWS S3 示例：https://s3.amazonaws.com
+    endpoint: http://localhost:9000
+
+    # 区域
+    # RustFS/MinIO 通常使用：us-east-1
+    # AWS S3 根据实际情况填写，如：us-west-2
+    region: us-east-1
+
+    # 连接超时时间（毫秒）
+    connection-timeout: 10000
+
+    # 读取超时时间（毫秒）
+    read-timeout: 60000
+
+  # 本地存储配置（当 type=local 时使用）
+  local:
+    # 存储根路径
+    root-path: ./storage
+    # 访问基础URL
+    base-url: /files
+
+  # 阿里云 OSS 配置（当 type=aliyun-oss 时使用）
+  aliyun-oss:
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    bucket-name: your-bucket-name

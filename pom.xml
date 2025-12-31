@@ -22,6 +22,7 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <hutool.version>5.8.42</hutool.version>
         <satoken.version>1.44.0</satoken.version>
+        <aws.s3.version>2.29.12</aws.s3.version>
         <!-- docker 打包插件 -->
         <docker.plugin.version>0.48.0</docker.plugin.version>
         <!--docker远程仓库-->
@@ -30,6 +31,7 @@
     </properties>
     <modules>
         <module>xiuyuan-common</module>
+        <module>xiuyuan-file-storage</module>
         <module>xiuyuan-admin</module>
     </modules>
     <dependencies>
@@ -75,6 +77,12 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-template</artifactId>
                 <version>${satoken.version}</version>
+            </dependency>
+            <!-- AWS S3 SDK (用于RustFS/MinIO/S3) -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${aws.s3.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -21,9 +21,9 @@ spring:
     # 字符编码配置已移除，使用默认配置
   data:
     redis:
-      host: ${REDIS_HOST:100.69.46.53}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      database: ${REDIS_DATABASE:9}
+      database: ${REDIS_DATABASE:0}
       password: ${REDIS_PWD:U2FsdGVkX182WAz5KErsYO}
       lettuce:
         pool:
@@ -53,6 +53,37 @@ sa-token:
   token-style: random-64
   # 是否输出操作日志
   is-log: false
+
+file-storage:
+  # 是否启用文件存储服务（默认：true）
+  enabled: true
+  # 存储类型：rustfs, minio, s3, aliyun-oss, local
+  type: rustfs
+  # 默认存储桶名称
+  bucket-name: xiuyuan
+  # 基础路径（会作为所有文件路径的前缀）
+  base-path: ""
+  # 自定义域名（可选，用于访问文件，如：https://cdn.example.com）
+  custom-domain: ""
+  # S3 协议兼容配置（用于 RustFS、MinIO、S3）
+  s3:
+    # 访问密钥 ID
+    access-key-id: ${STORE_ACCESS_KEY:DaIxbJFyHjwYcrGK3AZR}
+    # 访问密钥 Secret
+    secret-access-key: ${STORE_SECRET_KEY:YE59vZTfPgpoQxqSDr7XRFAUOIVnG4a1tmjuHK2e}
+    # 服务端点
+    # RustFS 示例：http://localhost:9000
+    # MinIO 示例：http://localhost:9000
+    # AWS S3 示例：https://s3.amazonaws.com
+    endpoint: http://localhost:9000
+    # 区域
+    # RustFS/MinIO 通常使用：us-east-1
+    # AWS S3 根据实际情况填写，如：us-west-2
+    region: us-east-1
+    # 连接超时时间（毫秒）
+    connection-timeout: 10000
+    # 读取超时时间（毫秒）
+    read-timeout: 60000
 
 logging:
   level:
