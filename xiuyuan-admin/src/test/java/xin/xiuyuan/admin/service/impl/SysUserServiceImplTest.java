@@ -245,6 +245,26 @@ class SysUserServiceImplTest {
         menuMenu.setCreateBy(adminId);
         permissionRepository.save(menuMenu);
 
+        // 个人中心
+        SysMenuPermission menuPersonal = new SysMenuPermission();
+//        menuPersonal.setId("695228a8702b4a1843871a1d");
+        menuPersonal.setParentId("69521743702b4a1843871a17");
+        menuPersonal.setName("Personal");
+        menuPersonal.setPath("personal");
+        menuPersonal.setComponent("/setting/personal/index.vue");
+        menuPersonal.setAlwaysShow(false);
+        menuPersonal.setOrderNum(6);
+        menuPersonal.setStatus(CommonStatus.NORMAL);
+        menuPersonal.setType(MenuType.MENU);
+        menuPersonal.setHidden(true);
+        menuPersonal.setMeta(
+                new SysMenuPermission.Meta()
+                        .setTitle("个人中心")
+                        .setDefaultOpen(false)
+                        .setPermissions("setting:personal:list")
+        );
+        menuPersonal.setCreateBy(adminId);
+        permissionRepository.save(menuPersonal);
         log.info("系统设置菜单初始化完成");
     }
 

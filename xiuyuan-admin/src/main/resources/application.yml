@@ -24,7 +24,7 @@ spring:
       host: ${REDIS_HOST:100.69.46.53}
       port: ${REDIS_PORT:6379}
       database: ${REDIS_DATABASE:9}
-      password: ${REDIS_PWD:hzcldev888}
+      password: ${REDIS_PWD:U2FsdGVkX182WAz5KErsYO}
       lettuce:
         pool:
           enabled: true
@@ -33,7 +33,7 @@ spring:
           max-idle: 3
           min-idle: 1
     mongodb:
-      uri: mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@100.91.153.120:2017/xiuyuan-db?authSource=admin
+      uri: ${MONGO_URI:mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@localhost:27017/xiuyuan-db?authSource=admin}
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
