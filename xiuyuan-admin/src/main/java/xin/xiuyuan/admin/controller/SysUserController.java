@@ -2,6 +2,7 @@ package xin.xiuyuan.admin.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -103,5 +104,34 @@ public class SysUserController {
         }
         form.setId(id);
         return userService.resetPwd(form);
+    }
+
+    /**
+     * 查询用户信息
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission(value = "setting:user:list", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    public ApiResult<SysUserVO> findById(@PathVariable String id) {
+        return ApiResult.success(userService.findVoById(id));
+    }
+
+    /**
+     * 查询当前用户信息
+     */
+    @GetMapping("/current")
+    public ApiResult<SysUserVO> findCurrent() {
+        return ApiResult.success(userService.findVoById(StpUtil.getLoginIdAsString()));
+    }
+
+    /**
+     * 修改用户资料
+     */
+    @PutMapping("/avatar/{id}")
+    public ApiResult<String> updateAvatar(@PathVariable String id, @RequestBody @Validated UserUpdateProfile form, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
+        }
+        form.setId(id);
+        return userService.updateAvatar(form);
     }
 }

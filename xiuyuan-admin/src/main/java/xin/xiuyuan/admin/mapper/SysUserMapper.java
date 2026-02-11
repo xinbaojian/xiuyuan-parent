@@ -2,6 +2,7 @@ package xin.xiuyuan.admin.mapper;
 
 import org.mapstruct.*;
 import xin.xiuyuan.admin.dto.user.SysUserForm;
+import xin.xiuyuan.admin.dto.user.SysUserVO;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 
@@ -70,4 +71,6 @@ public interface SysUserMapper {
     @Mapping(target = "postId", ignore = true)
     @Mapping(target = "roleIds", ignore = true)
     void updateEntity(SysUserForm form, @MappingTarget SysUser user);
+
+    SysUserVO toUserVO(SysUser user);
 }

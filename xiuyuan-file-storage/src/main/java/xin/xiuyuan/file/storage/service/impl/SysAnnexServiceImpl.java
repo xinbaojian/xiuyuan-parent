@@ -3,6 +3,7 @@ package xin.xiuyuan.file.storage.service.impl;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import xin.xiuyuan.domain.entity.SysAnnex;
 import xin.xiuyuan.file.storage.config.FileStorageProperties;
@@ -44,6 +45,7 @@ public class SysAnnexServiceImpl implements ISysAnnexService {
     }
 
     @Override
+    @Cacheable(value = "annex", key = "#id", unless = "#result == null")
     public SysAnnex findById(String id) {
         SysAnnex annex = annexRepository.findById(id).orElse(null);
         if (annex != null) {

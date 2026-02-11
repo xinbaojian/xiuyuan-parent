@@ -89,6 +89,8 @@ public interface ISysUserService {
      */
     SysUser findById(String id);
 
+    SysUserVO findVoById(String id);
+
     /**
      * 获取用户权限列表
      *
@@ -112,4 +114,13 @@ public interface ISysUserService {
      * @return 角色列表
      */
     List<String> getRoleKeys(String id);
+
+    /**
+     * 更新用户头像
+     *
+     * @param form 更新用户头像表单
+     * @return ApiResult
+     */
+    ApiResult<String> updateAvatar(UserUpdateProfile form);
+
 }

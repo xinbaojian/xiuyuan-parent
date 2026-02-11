@@ -31,6 +31,8 @@ import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
 import xin.xiuyuan.common.constant.ConfigConstant;
 import xin.xiuyuan.common.types.CommonStatus;
+import xin.xiuyuan.domain.entity.SysAnnex;
+import xin.xiuyuan.file.storage.service.ISysAnnexService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -67,6 +69,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
     private final MenuPermissionRepository permissionRepository;
 
+    private final ISysAnnexService annexService;
 
     @Override
     public ApiResult<String> save(SysUserCreateForm form) {
@@ -299,6 +302,10 @@ public class SysUserServiceImpl implements ISysUserService {
             }
         }
         infoVo.setUsername(user.getUsername());
+        if (StrUtil.isNotBlank(user.getAvatar())) {
+            SysAnnex annex = annexService.findById(user.getAvatar());
+            infoVo.setAvatar(annex.getObjectUrl());
+        }
         return ApiResult.success(infoVo);
     }
 
@@ -321,6 +328,26 @@ public class SysUserServiceImpl implements ISysUserService {
     @Cacheable(value = "user", key = "#id", unless = "#result == null")
     public SysUser findById(String id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public SysUserVO findVoById(String id) {
+        SysUser user = userRepository.findById(id).orElse(null);
+        Assert.notNull(user, "用户不存在");
+        SysUserVO userVO = userMapper.toUserVO(user);
+        if (StrUtil.isNotBlank(userVO.getPostId())) {
+            postRepository.findById(userVO.getPostId()).ifPresent(post -> userVO.setPostName(post.getPostName()));
+        }
+        if (StrUtil.isNotBlank(userVO.getDeptId())) {
+            deptRepository.findById(userVO.getDeptId()).ifPresent(dept -> userVO.setDeptName(dept.getDeptName()));
+        }
+        if (CollUtil.isNotEmpty(userVO.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(userVO.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                userVO.setRoleNames(roles.stream().map(SysRole::getRoleName).distinct().toList());
+            }
+        }
+        return userVO;
     }
 
     @Override
@@ -388,4 +415,19 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         return List.of();
     }
+
+    @Override
+    public ApiResult<String> updateAvatar(UserUpdateProfile form) {
+        SysUser user = userRepository.findById(form.getId()).orElse(null);
+        Assert.notNull(user, "用户不存在");
+        if (StrUtil.isNotBlank(form.getAvatar())) {
+            SysAnnex annex = annexService.findById(form.getAvatar());
+            Assert.notNull(annex, "附件不存在");
+            user.setAvatar(form.getAvatar());
+            userRepository.save(user);
+        }
+        return ApiResult.<String>success().setMessage("更新头像成功");
+    }
+
+
 }
