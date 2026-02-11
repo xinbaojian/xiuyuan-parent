@@ -55,6 +55,7 @@ public class SysDeptController {
      * @return 修改结果
      */
     @PostMapping("/{id}")
+    @SaCheckPermission(value = "sys:dept:edit")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysDeptForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -69,6 +70,7 @@ public class SysDeptController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission(value = "sys:dept:remove")
     public ApiResult<String> delete(@PathVariable String id) {
         return deptService.delete(id);
     }

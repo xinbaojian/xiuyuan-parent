@@ -37,4 +37,23 @@ public interface MenuPermissionRepository extends MongoRepository<SysMenuPermiss
      * @return 是否存在
      */
     Boolean existsByParentId(String parentId);
+
+    /**
+     * 根据父级 ID 和名称查询菜单（排除指定 ID）
+     *
+     * @param parentId  父级 ID
+     * @param name      路由名称
+     * @param excludeId 需要排除的菜单 ID
+     * @return 菜单权限
+     */
+    SysMenuPermission findByParentIdAndNameAndIdNot(String parentId, String name, String excludeId);
+
+    /**
+     * 根据父级 ID 和名称查询菜单
+     *
+     * @param parentId 父级 ID
+     * @param name     路由名称
+     * @return 菜单权限
+     */
+    SysMenuPermission findByParentIdAndName(String parentId, String name);
 }

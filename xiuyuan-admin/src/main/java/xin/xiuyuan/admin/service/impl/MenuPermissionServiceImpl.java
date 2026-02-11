@@ -50,9 +50,14 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
 
     @Override
     public ApiResult<String> save(MenuPermissionForm form) {
-        // 校验路由名称是否已存在
-        SysMenuPermission nameCheck = menuPermissionRepository.findByName(form.getName());
-        Assert.isNull(nameCheck, "路由名称已存在");
+
+        if (MenuType.MENU.equals(form.getType())) {
+            // 校验路由名称是否已存在
+            SysMenuPermission nameCheck = menuPermissionRepository.findByName(form.getName());
+            Assert.isNull(nameCheck, "路由名称已存在");
+            Assert.isTrue(StrUtil.isNotBlank(form.getName()), "路由名称不能为空");
+            Assert.isTrue(StrUtil.isNotBlank(form.getPath()), "菜单路径不能为空");
+        }
 
         SysMenuPermission sysMenuPermission = menuPermissionMapper.toEntity(form);
 
@@ -71,13 +76,20 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
     @Override
     @CacheEvict(value = "user:permissions", allEntries = true)
     public ApiResult<String> update(String id, MenuPermissionForm form) {
+// 当菜单类型为 MENU 时，校验 name 和 path
+        if (form.getType() == MenuType.MENU) {
+            Assert.hasText(form.getName(), "路由名称不能为空");
+            Assert.hasText(form.getPath(), "路由路径不能为空");
+            // 校验同级菜单下路由名称是否已存在
+            SysMenuPermission nameCheck = menuPermissionRepository.findByParentIdAndNameAndIdNot(form.getParentId(), form.getName(), id);
+            Assert.isNull(nameCheck, "同级菜单下路由名称已存在");
+        }
+
         // 校验菜单 ID 是否存在
         SysMenuPermission sysMenuPermission = menuPermissionRepository.findById(id).orElse(null);
         Assert.notNull(sysMenuPermission, "菜单不存在");
 
-        // 校验路由名称是否已存在
-        SysMenuPermission nameCheck = menuPermissionRepository.findByName(form.getName());
-        Assert.isTrue(nameCheck == null || nameCheck.getId().equals(id), "路由名称已存在");
+
 
         // 更新基本信息
         menuPermissionMapper.updateEntity(form, sysMenuPermission);
@@ -95,7 +107,7 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
 
         sysMenuPermission.setUpdateTime(LocalDateTime.now());
         menuPermissionRepository.save(sysMenuPermission);
-        return ApiResult.success("编辑菜单成功");
+        return ApiResult.<String>success().setMessage("编辑菜单成功");
     }
 
     @Override
@@ -189,7 +201,7 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
     @Override
     public ApiResult<List<MenuTreeVO>> getCurrentMenuTree() {
         List<String> permissionIdList = userService.getPermissionIdList(StpUtil.getLoginIdAsString());
-        if (CollUtil.isEmpty(permissionIdList)){
+        if (CollUtil.isEmpty(permissionIdList)) {
             return ApiResult.success(new ArrayList<>());
         }
         Criteria criteria = Criteria.where("delFlag").is(false);

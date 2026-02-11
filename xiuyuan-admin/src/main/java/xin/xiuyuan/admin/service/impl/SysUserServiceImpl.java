@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -277,10 +278,27 @@ public class SysUserServiceImpl implements ISysUserService {
         SysUser user = userRepository.findById(StpUtil.getLoginIdAsString()).orElse(null);
         Assert.notNull(user, "用户不存在");
         UserInfoVo infoVo = new UserInfoVo();
-        infoVo.setUsername(user.getUsername())
-                .setPermissions(List.of("admin"))
-//                .setAvatar(user.getAvatar())
-        ;
+        // 查询用户角色权限
+        if (CollUtil.isNotEmpty(user.getRoleIds())) {
+            List<SysRole> roles = roleRepository.findAllById(user.getRoleIds());
+            if (CollUtil.isNotEmpty(roles)) {
+                List<String> permissionIdList = roles.stream()
+                        .flatMap(role -> role.getPermissionIds().stream())
+                        .filter(StrUtil::isNotBlank)
+                        .distinct()
+                        .toList();
+                List<SysMenuPermission> permissionList = permissionRepository.findAllById(permissionIdList);
+                infoVo.setPermissions(
+                        permissionList.stream()
+                                .filter(p -> Objects.nonNull(p.getMeta()))
+                                .map(p -> p.getMeta().getPermissions())
+                                .filter(StrUtil::isNotBlank)
+                                .distinct()
+                                .toList()
+                );
+            }
+        }
+        infoVo.setUsername(user.getUsername());
         return ApiResult.success(infoVo);
     }
 

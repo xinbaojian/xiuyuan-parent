@@ -29,13 +29,11 @@ public class MenuPermissionForm {
     /**
      * 路由路径
      */
-    @NotBlank(message = "路由路径不能为空")
     private String path;
 
     /**
      * 路由名称
      */
-    @NotBlank(message = "路由名称不能为空")
     private String name;
 
     /**
