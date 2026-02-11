@@ -40,10 +40,16 @@ public class AppConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-        // 为Redis序列化创建一个专门的ObjectMapper
+        // 配置类型提示，确保反序列化时保留类型信息
         ObjectMapper redisObjectMapper = new ObjectMapper();
         redisObjectMapper.registerModule(new JavaTimeModule());
         redisObjectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        // 启用默认类型信息，确保反序列化时能正确还原类型
+        redisObjectMapper.activateDefaultTyping(
+                redisObjectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+        );
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 // 设置默认缓存过期时间
@@ -55,6 +61,8 @@ public class AppConfig {
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(config)
+                // 预定义 annex 缓存的配置
+                .withCacheConfiguration("annex", config)
                 .build();
     }
 }

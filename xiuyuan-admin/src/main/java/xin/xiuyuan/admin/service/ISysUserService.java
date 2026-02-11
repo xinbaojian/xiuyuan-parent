@@ -1,6 +1,7 @@
 package xin.xiuyuan.admin.service;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.entity.SysUser;
@@ -57,7 +58,7 @@ public interface ISysUserService {
      * @param form 登录表单
      * @return ApiResult
      */
-    ApiResult<SaTokenInfo> login(LoginForm form);
+    ApiResult<SaTokenInfo> login(LoginForm form, HttpServletRequest request);
 
     /**
      * 登出

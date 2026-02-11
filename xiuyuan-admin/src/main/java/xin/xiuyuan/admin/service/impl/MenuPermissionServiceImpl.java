@@ -107,7 +107,7 @@ public class MenuPermissionServiceImpl implements IMenuPermissionService {
 
         sysMenuPermission.setUpdateTime(LocalDateTime.now());
         menuPermissionRepository.save(sysMenuPermission);
-        return ApiResult.<String>success().setMessage("编辑菜单成功");
+        return ApiResult.success("编辑菜单成功");
     }
 
     @Override

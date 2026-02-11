@@ -1,5 +1,6 @@
 package xin.xiuyuan.admin.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -31,11 +32,11 @@ public class SysLoginController {
      * @param loginForm 登录表单
      */
     @PostMapping("/login")
-    public ApiResult<?> login(@RequestBody @Validated LoginForm loginForm, BindingResult bindingResult) {
+    public ApiResult<?> login(@RequestBody @Validated LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
         }
-        return userService.login(loginForm);
+        return userService.login(loginForm, request);
     }
 
     /**

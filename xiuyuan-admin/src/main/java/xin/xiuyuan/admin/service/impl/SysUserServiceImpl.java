@@ -6,6 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -224,22 +225,19 @@ public class SysUserServiceImpl implements ISysUserService {
                 : Collections.emptyMap();
 
         // 转换为 VO 对象并填充关联数据
-        Map<String, SysDept> finalDeptMap = deptMap;
-        Map<String, SysPost> finalPostMap = postMap;
-        Map<String, SysRole> finalRoleMap = roleMap;
         List<SysUserPageVO> voList = userList.stream()
                 .map(user -> {
                     SysUserPageVO vo = userMapper.toVO(user);
                     if (StrUtil.isNotBlank(user.getDeptId())) {
-                        vo.setDept(finalDeptMap.get(user.getDeptId()));
+                        vo.setDept(deptMap.get(user.getDeptId()));
                     }
                     if (StrUtil.isNotBlank(user.getPostId())) {
-                        vo.setPost(finalPostMap.get(user.getPostId()));
+                        vo.setPost(postMap.get(user.getPostId()));
                     }
                     if (CollUtil.isNotEmpty(user.getRoleIds())) {
                         List<SysRole> roles = user.getRoleIds().stream()
-                                .map(finalRoleMap::get)
-                                .filter(r -> r != null)
+                                .map(roleMap::get)
+                                .filter(Objects::nonNull)
                                 .collect(Collectors.toList());
                         vo.setRoles(roles);
                     }
@@ -255,7 +253,7 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
-    public ApiResult<SaTokenInfo> login(LoginForm form) {
+    public ApiResult<SaTokenInfo> login(LoginForm form, HttpServletRequest request) {
         SysUser loginNameCheck = userRepository.findByLoginNameAndDeletedIsFalse(form.getUsername());
         if (loginNameCheck == null) {
             return ApiResult.error("用户不存在");
@@ -267,6 +265,10 @@ public class SysUserServiceImpl implements ISysUserService {
             return ApiResult.error("用户名或密码错误");
         }
         StpUtil.login(loginNameCheck.getId(), form.getLoginDevice().name());
+        // 更新最后登录IP，最后登录时间
+        loginNameCheck.setLoginIp(request.getRemoteAddr());
+        loginNameCheck.setLoginDate(LocalDateTime.now());
+        userRepository.save(loginNameCheck);
         return ApiResult.success(StpUtil.getTokenInfo());
     }
 
@@ -426,7 +428,7 @@ public class SysUserServiceImpl implements ISysUserService {
             user.setAvatar(form.getAvatar());
             userRepository.save(user);
         }
-        return ApiResult.<String>success().setMessage("更新头像成功");
+        return ApiResult.success("更新头像成功");
     }
 
 
