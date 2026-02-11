@@ -1,4 +1,4 @@
-package xin.xiuyuan.admin.entity;
+package xin.xiuyuan.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

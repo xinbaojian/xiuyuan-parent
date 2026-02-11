@@ -23,7 +23,7 @@ import java.util.List;
  * @create 2025-12-29 11:40
  **/
 @RestController
-@RequestMapping("/menu")
+@RequestMapping("/admin/menu")
 @RequiredArgsConstructor
 public class MenuPermissionController {
 

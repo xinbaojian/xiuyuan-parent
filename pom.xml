@@ -31,6 +31,7 @@
     </properties>
     <modules>
         <module>xiuyuan-common</module>
+        <module>xiuyuan-domain</module>
         <module>xiuyuan-file-storage</module>
         <module>xiuyuan-admin</module>
     </modules>

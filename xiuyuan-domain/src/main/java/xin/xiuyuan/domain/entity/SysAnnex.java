@@ -1,4 +1,4 @@
-package xin.xiuyuan.admin.entity;
+package xin.xiuyuan.domain.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

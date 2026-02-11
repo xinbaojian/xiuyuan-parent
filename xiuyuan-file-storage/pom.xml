@@ -41,6 +41,11 @@
             <artifactId>xiuyuan-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>xin.xiuyuan</groupId>
+            <artifactId>xiuyuan-domain</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
         <!-- SA-Token (权限控制) -->
         <dependency>

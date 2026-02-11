@@ -20,7 +20,7 @@ import xin.xiuyuan.common.constant.RoleConstant;
  * @create 2025-12-15 17:35
  **/
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin/user")
 @RequiredArgsConstructor
 public class SysUserController {
 

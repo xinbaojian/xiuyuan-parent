@@ -2,6 +2,7 @@ package xin.xiuyuan.file.storage.service.impl;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +19,6 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * S3 协议兼容的文件存储服务实现
@@ -248,21 +248,7 @@ public class S3FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String getFileUrl(String objectName) {
-        try {
-            String bucketName = properties.getBucketName();
-
-            // 如果配置了自定义域名，使用自定义域名
-            if (properties.getCustomDomain() != null && !properties.getCustomDomain().isEmpty()) {
-                return properties.getCustomDomain() + "/" + objectName;
-            }
-
-            // 否则使用预签名URL（默认7天有效期）
-            return getPresignedUrl(objectName, (int) TimeUnit.DAYS.toSeconds(7));
-
-        } catch (Exception e) {
-            log.error("获取文件URL失败: objectName={}, error={}", objectName, e.getMessage(), e);
-            throw new FileStorageException("FILE_URL_ERROR", "获取文件URL失败: " + e.getMessage(), e);
-        }
+        return StrUtil.format("{}/{}", properties.getBucketName(), objectName);
     }
 
     @Override

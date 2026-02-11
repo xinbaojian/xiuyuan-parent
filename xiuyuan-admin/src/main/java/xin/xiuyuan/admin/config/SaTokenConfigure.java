@@ -21,7 +21,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      * 不需要登录校验的路径
      */
     private static final String[] EXCLUDE_PATHS = {
-            "/login",
+            "/admin/login",
     };
 
     /**

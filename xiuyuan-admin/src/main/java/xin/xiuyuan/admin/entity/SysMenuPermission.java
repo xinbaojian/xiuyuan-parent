@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 import xin.xiuyuan.common.types.CommonStatus;
 import xin.xiuyuan.common.types.MenuType;
+import xin.xiuyuan.domain.entity.BaseEntity;
 
 import java.io.Serial;
 import java.io.Serializable;

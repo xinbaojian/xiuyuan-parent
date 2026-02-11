@@ -1,7 +1,7 @@
 package xin.xiuyuan.admin.service;
 
-import xin.xiuyuan.admin.entity.BaseEntity;
 import xin.xiuyuan.admin.entity.SysUser;
+import xin.xiuyuan.domain.entity.BaseEntity;
 
 import java.util.List;
 import java.util.Map;

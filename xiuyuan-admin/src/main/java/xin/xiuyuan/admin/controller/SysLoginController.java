@@ -18,7 +18,7 @@ import xin.xiuyuan.common.common.ApiResult;
  * @create 2025-12-19 11:30
  **/
 @RestController
-@RequestMapping()
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class SysLoginController {
 

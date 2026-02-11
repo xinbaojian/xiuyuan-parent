@@ -24,7 +24,7 @@ import java.util.List;
  * @create 2025-12-17
  **/
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/admin/post")
 @RequiredArgsConstructor
 public class SysPostController {
 

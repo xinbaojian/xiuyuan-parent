@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -30,6 +31,11 @@ import java.time.Duration;
 @EnableAsync
 @Configuration(proxyBeanMethods = false)
 @ComponentScan(basePackages = {"xin.xiuyuan"})
+@EnableMongoRepositories(basePackages = {
+        "xin.xiuyuan.admin.repository",
+        "xin.xiuyuan.domain.repository",
+        "xin.xiuyuan.file.storage.repository"
+})
 public class AppConfig {
 
     @Bean

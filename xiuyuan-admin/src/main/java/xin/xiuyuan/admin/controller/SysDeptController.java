@@ -25,7 +25,7 @@ import java.util.List;
  * @create 2025-12-15 18:03
  **/
 @RestController
-@RequestMapping("/dept")
+@RequestMapping("/admin/dept")
 @RequiredArgsConstructor
 public class SysDeptController {
 

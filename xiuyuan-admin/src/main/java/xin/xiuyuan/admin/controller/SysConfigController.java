@@ -18,7 +18,7 @@ import xin.xiuyuan.common.common.PageData;
  * @create 2025-12-17
  **/
 @RestController
-@RequestMapping("/config")
+@RequestMapping("/admin/config")
 @RequiredArgsConstructor
 public class SysConfigController {
 

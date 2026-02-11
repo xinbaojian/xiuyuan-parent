@@ -3,7 +3,32 @@
     "allow": [
       "Bash(tree:*)",
       "mcp__web-search-prime__webSearchPrime",
-      "Bash(mvn:*)"
+      "Bash(mvn:*)",
+      "Bash(dir:*)",
+      "Bash(mkdir:*)"
     ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "bingcnmcp",
+    "xiuyuan-admin - API 文档",
+    "bingcn"
+  ],
+  "mcpServers": {
+    "智慧防艾 - API 文档": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "apifox-mcp-server@latest",
+        "--project-id=7723635"
+      ],
+      "env": {
+        "APIFOX_ACCESS_TOKEN": "APS-pTqtUwBo7C7c0um4kExrCOfcg4HR6Zpw"
+      }
+    }
+  },
+  "autoUpdatesChannel": "latest",
+  "enabledPlugins": {
+    "glm-plan-usage@zai-coding-plugins": true
   }
 }

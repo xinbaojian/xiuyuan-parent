@@ -3,10 +3,10 @@ package xin.xiuyuan.admin.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.stereotype.Service;
-import xin.xiuyuan.admin.entity.BaseEntity;
 import xin.xiuyuan.admin.entity.SysUser;
 import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.admin.service.IBaseService;
+import xin.xiuyuan.domain.entity.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -25,7 +25,7 @@ import java.util.List;
  * @date 2025-12-17
  */
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/admin/role")
 @RequiredArgsConstructor
 public class SysRoleController {
 
