@@ -351,17 +351,15 @@ public class S3FileStorageServiceImpl implements FileStorageService {
                     .build();
 
             s3Client.headBucket(headRequest);
-
+            log.info("Bucket {} 已存在", bucketName);
         } catch (NoSuchBucketException e) {
             // Bucket 不存在，尝试创建
             try {
                 CreateBucketRequest createRequest = CreateBucketRequest.builder()
                         .bucket(bucketName)
                         .build();
-
                 s3Client.createBucket(createRequest);
                 log.info("Bucket {} 创建成功", bucketName);
-
             } catch (Exception createException) {
                 log.error("创建 bucket {} 失败: {}", bucketName, createException.getMessage());
                 throw new FileStorageException("BUCKET_CREATE_ERROR",

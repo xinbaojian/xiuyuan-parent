@@ -306,7 +306,9 @@ public class SysUserServiceImpl implements ISysUserService {
         infoVo.setUsername(user.getUsername());
         if (StrUtil.isNotBlank(user.getAvatar())) {
             SysAnnex annex = annexService.findById(user.getAvatar());
-            infoVo.setAvatar(annex.getObjectUrl());
+            if (annex != null) {
+                infoVo.setAvatar(annex.getObjectUrl());
+            }
         }
         return ApiResult.success(infoVo);
     }
