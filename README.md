@@ -221,9 +221,129 @@ xiuyuan-parent/
 
 ## 快速开始
 
+### 方式一：Docker Compose（推荐）
+
+使用 Docker Compose 可以一键启动所有依赖服务（MongoDB、Redis、RustFS），并自动初始化基础数据。
+
+#### ⚠️ 重要提示
+
+**请将 `docker-compose` 目录复制到其他位置使用，不要直接在项目目录下执行！**
+
+原因：
+
+- `docker-compose` 目录包含数据持久化卷（`datadir`），会占用大量磁盘空间
+- 开发过程中频繁重启服务可能导致数据不一致
+- 分离部署目录和源代码目录是更好的实践
+
+**建议目录结构：**
+
+```
+/opt/xiuyuan-services/          # 服务部署目录（与项目分离）
+└── docker-compose/
+    ├── docker-compose.yml
+    ├── datadir/                 # MongoDB 数据文件
+    ├── mongo-init/              # 初始化脚本
+    └── rustfs/                  # RustFS 数据
+```
+
+#### 部署步骤
+
+```bash
+# 1. 复制 docker-compose 目录到部署位置
+cp -r docker-compose /opt/xiuyuan-services/
+cd /opt/xiuyuan-services/docker-compose
+
+# 2. 启动所有服务
+docker-compose up -d
+
+# 3. 查看服务状态
+docker-compose ps
+
+# 4. 查看日志
+docker-compose logs -f mongo
+```
+
+#### 服务说明
+
+| 服务      | 端口         | 说明                |
+|---------|------------|-------------------|
+| MongoDB | 27017      | 数据库服务             |
+| Redis   | 6379       | 缓存服务              |
+| RustFS  | 9000, 9001 | 文件存储服务（API + 控制台） |
+
+#### 数据初始化
+
+**首次启动**时，MongoDB 会自动执行以下初始化操作：
+
+1. 创建数据库：`xiuyuan-db`
+2. 创建用户并设置权限
+3. 执行初始化脚本 `mongo-init/init-data.js`
+4. 插入默认数据：
+    - 部门数据（sysDept）
+    - 角色数据（sysRole）
+    - 用户数据（sysUser）
+    - 岗位数据（sysPost）
+    - 菜单权限数据（sysMenuPermission）
+    - 配置数据（sysConfig）
+
+**注意：** 初始化脚本只在数据目录为空时执行一次。如果需要重新初始化：
+
+```bash
+# 停止服务并删除数据
+docker-compose down -v
+rm -rf datadir
+
+# 重新启动（会自动初始化）
+docker-compose up -d
+```
+
+#### 导出当前数据为初始化脚本
+
+如果需要从当前运行的数据库导出数据作为初始化脚本：
+
+```bash
+cd /opt/xiuyuan-services/docker-compose
+
+# 执行导出脚本（从运行中的数据库导出数据）
+./export-init-data.sh
+```
+
+导出的脚本会保存到 `mongo-init/init-data.js`，下次启动时自动导入。
+
+#### 默认账号
+
+系统初始化后会创建以下默认账号：
+
+| 用户名        | 密码        | 说明    |
+|------------|-----------|-------|
+| admin      | 123456    | 超级管理员 |
+| xinbaojian | (数据库中的密码) | 开发者账号 |
+
+#### 常用命令
+
+```bash
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f [mongo|redis|rustfs]
+
+# 重启服务
+docker-compose restart
+
+# 停止服务
+docker-compose down
+
+# 停止并删除数据（⚠️ 会清空所有数据）
+docker-compose down -v
+rm -rf datadir
+```
+
+### 方式二：手动安装
+
 1. 克隆项目到本地
 2. 确保已安装Java 21和Maven
-3. 配置MongoDB和Redis环境
+3. 手动安装并配置MongoDB和Redis
 4. 修改 `application.yml` 中的数据库连接配置
 5. 在项目根目录执行以下命令启动项目：
    ```bash
@@ -267,3 +387,134 @@ xiuyuan-parent/
 ## 许可证
 
 本项目仅供学习和参考使用。
+
+## 附录
+
+### Docker Compose 部署说明
+
+#### 目录结构
+
+```
+docker-compose/
+├── docker-compose.yml       # Docker Compose 配置文件
+├── datadir/                 # MongoDB 数据持久化目录
+│   └── (首次启动后自动创建)
+├── mongo-init/              # MongoDB 初始化脚本
+│   ├── init-data.js         # 初始化数据脚本（自动导出）
+│   └── export-init-data.sh  # 数据导出脚本
+├── rustfs/                  # RustFS 文件存储数据
+│   ├── data/                # 实际文件存储
+│   └── logs/                # RustFS 日志
+```
+
+#### 环境变量
+
+| 变量名                        | 值                      | 说明               |
+|----------------------------|------------------------|------------------|
+| MONGO_INITDB_ROOT_USERNAME | xinbaojian             | MongoDB root 用户名 |
+| MONGO_INITDB_ROOT_PASSWORD | JD0PjLYMZd1QPrQHyHWF   | MongoDB root 密码  |
+| MONGO_INITDB_DATABASE      | xiuyuan-db             | 默认数据库            |
+| REDIS_PASSWORD             | U2FsdGVkX182WAz5KErsYO | Redis 密码         |
+
+#### 数据备份与恢复
+
+**备份数据：**
+
+```bash
+# 导出当前数据为初始化脚本
+./export-init-data.sh
+
+# 备份数据目录
+tar -czf xiuyuan-data-backup-$(date +%Y%m%d).tar.gz datadir/
+```
+
+**恢复数据：**
+
+```bash
+# 方式1：使用初始化脚本（适用于全新环境）
+docker-compose down -v
+rm -rf datadir
+docker-compose up -d
+
+# 方式2：恢复数据目录（适用于数据迁移）
+tar -xzf xiuyuan-data-backup-20250222.tar.gz
+docker-compose up -d
+```
+
+#### 故障排查
+
+**1. MongoDB 初始化脚本未执行**
+
+```bash
+# 检查日志
+docker-compose logs mongo | grep "running.*init"
+
+# 确认数据目录为空
+ls datadir/
+
+# 重新初始化
+docker-compose down -v
+rm -rf datadir
+docker-compose up -d
+```
+
+**2. 容器启动失败**
+
+```bash
+# 查看详细日志
+docker-compose logs [mongo|redis|rustfs]
+
+# 检查端口占用
+netstat -tuln | grep -E "27017|6379|9000"
+
+# 清理并重启
+docker-compose down
+docker-compose up -d
+```
+
+**3. 数据连接失败**
+
+```bash
+# 检查容器是否运行
+docker-compose ps
+
+# 测试 MongoDB 连接
+docker exec docker-compose-mongo-1 mongosh \
+  --username xinbaojian \
+  --password JD0PjLYMZd1QPrQHyHWF \
+  --authenticationDatabase admin
+
+# 测试 Redis 连接
+docker exec docker-compose-redis-1 redis-cli -a U2FsdGVkX182WAz5KErsYO ping
+```
+
+#### 性能优化建议
+
+1. **MongoDB**
+    - 生产环境建议调整 `wiredTigerCacheSizeGB`
+    - 根据数据量调整内存限制（当前限制 512MB）
+
+2. **Redis**
+    - 持久化需求可开启 AOF
+    - 调整最大内存限制
+
+3. **RustFS**
+    - 定期清理无用文件
+    - 监控磁盘空间使用
+
+#### 安全建议
+
+1. **修改默认密码**
+    - 修改 `MONGO_INITDB_ROOT_PASSWORD`
+    - 修改 `REDIS_PASSWORD`
+    - 修改 `RUSTFS_SECRET_KEY`
+
+2. **网络隔离**
+    - 使用 Docker 网络隔离服务
+    - 仅暴露必要的端口
+    - 配置防火墙规则
+
+3. **数据备份**
+    - 定期备份 `datadir` 目录
+    - 保留多个版本的备份文件
+    - 测试恢复流程
