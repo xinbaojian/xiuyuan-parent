@@ -24,6 +24,7 @@ import xin.xiuyuan.admin.mapper.menu.MenuPermissionMapper;
 import xin.xiuyuan.admin.repository.MenuPermissionRepository;
 import xin.xiuyuan.admin.repository.SysRoleRepository;
 import xin.xiuyuan.admin.repository.SysUserRepository;
+import xin.xiuyuan.admin.service.DataScopeService;
 import xin.xiuyuan.admin.service.ISysRoleService;
 import xin.xiuyuan.admin.vo.SysRolePageVO;
 import xin.xiuyuan.admin.vo.permission.SysMenuPermissionVO;
@@ -54,15 +55,17 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
     private final MenuPermissionMapper menuPermissionMapper;
 
     private final MenuPermissionRepository menuPermissionRepository;
+    private final DataScopeService dataScopeService;
 
     public SysRoleServiceImpl(SysUserRepository userRepository, SysRoleRepository roleRepository,
-                              MongoTemplate mongoTemplate, SysRoleMapper roleMapper, MenuPermissionMapper menuPermissionMapper, MenuPermissionRepository menuPermissionRepository) {
+                              MongoTemplate mongoTemplate, SysRoleMapper roleMapper, MenuPermissionMapper menuPermissionMapper, MenuPermissionRepository menuPermissionRepository, DataScopeService dataScopeService) {
         super(userRepository);
         this.roleRepository = roleRepository;
         this.mongoTemplate = mongoTemplate;
         this.roleMapper = roleMapper;
         this.menuPermissionMapper = menuPermissionMapper;
         this.menuPermissionRepository = menuPermissionRepository;
+        this.dataScopeService = dataScopeService;
     }
 
 
@@ -100,6 +103,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole> implements ISys
         role.setUpdateTime(LocalDateTime.now());
         role.setUpdateBy(StpUtil.getLoginIdAsString());
         roleRepository.save(role);
+
+        // 清理数据权限缓存
+        dataScopeService.clearDataScopeCache();
+
         return ApiResult.success("编辑角色成功!");
     }
 

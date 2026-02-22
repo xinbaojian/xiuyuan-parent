@@ -4,6 +4,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import xin.xiuyuan.admin.entity.SysUser;
 
+import java.util.List;
+
 /**
  * 用户 repository
  *
@@ -63,5 +65,21 @@ public interface SysUserRepository extends MongoRepository<SysUser, String> {
      * @return 用户信息
      */
     SysUser findByMobileAndIdNot(String mobile, String id);
+
+    /**
+     * 根据部门ID查询用户
+     *
+     * @param deptId 部门ID
+     * @return 用户列表
+     */
+    List<SysUser> findByDeptId(String deptId);
+
+    /**
+     * 根据部门ID列表查询用户
+     *
+     * @param deptIds 部门ID列表
+     * @return 用户列表
+     */
+    List<SysUser> findByDeptIdIn(List<String> deptIds);
 
 }

@@ -3,8 +3,10 @@ package xin.xiuyuan.admin.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import xin.xiuyuan.common.types.CommonStatus;
+import xin.xiuyuan.common.types.DataScopeType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 角色分页视图对象
@@ -69,7 +71,26 @@ public class SysRolePageVO {
      */
     private String remark;
 
+    /**
+     * 数据范围
+     */
+    private DataScopeType dataScope;
+
+    /**
+     * 数据范围描述
+     */
+    private String dataScopeDesc;
+
+    /**
+     * 自定义部门ID列表
+     */
+    private List<String> customDeptIds;
+
     public String getStatusDesc() {
         return status == null ? null : status.getDesc();
+    }
+
+    public String getDataScopeDesc() {
+        return dataScope == null ? null : dataScope.getDesc();
     }
 }

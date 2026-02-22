@@ -29,4 +29,13 @@ public interface SysDeptRepository extends MongoRepository<SysDept, String> {
      * @return 部门列表
      */
     List<SysDept> findAllByDelFlagIsFalse();
+
+    /**
+     * 根据 ancestors 字段查询所有子部门
+     * ancestors 格式: "00/grandparentId/parentId"
+     *
+     * @param deptId 部门ID
+     * @return 所有子部门列表
+     */
+    List<SysDept> findByAncestorsContaining(String deptId);
 }

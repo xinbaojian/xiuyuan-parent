@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 import xin.xiuyuan.common.types.CommonStatus;
+import xin.xiuyuan.common.types.DataScopeType;
 import xin.xiuyuan.domain.entity.BaseEntity;
 
 import java.io.Serial;
@@ -58,4 +59,14 @@ public class SysRole extends BaseEntity implements Serializable {
      * 菜单权限 ID 列表
      */
     private List<String> permissionIds;
+
+    /**
+     * 数据范围（1-5：全部/本部门/本部门及子部门/仅本人/自定义）
+     */
+    private DataScopeType dataScope = DataScopeType.SELF;
+
+    /**
+     * 自定义部门 ID 列表（当 dataScope = CUSTOM 时使用）
+     */
+    private List<String> customDeptIds;
 }

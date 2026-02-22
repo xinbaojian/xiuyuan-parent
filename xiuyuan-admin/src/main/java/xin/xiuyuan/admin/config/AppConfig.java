@@ -40,10 +40,17 @@ public class AppConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-        // 默认配置：不启用类型信息（用于简单类型缓存，如 List<String>）
+        // 默认配置：启用类型信息（用于复杂对象缓存）
+        // 这样可以自动处理所有自定义对象，无需手动配置
         ObjectMapper defaultObjectMapper = new ObjectMapper();
         defaultObjectMapper.registerModule(new JavaTimeModule());
         defaultObjectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        // 启用默认类型信息，使用 NON_FINAL 策略
+        defaultObjectMapper.activateDefaultTyping(
+                defaultObjectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+        );
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
@@ -51,28 +58,22 @@ public class AppConfig {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(defaultObjectMapper)))
                 .disableCachingNullValues();
 
-        // 对象缓存配置：启用类型信息（用于复杂对象缓存，如 SysAnnex）
-        ObjectMapper objectMapperMapper = new ObjectMapper();
-        objectMapperMapper.registerModule(new JavaTimeModule());
-        objectMapperMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        // 只对对象启用类型信息，使用 NON_FINAL 策略
-        objectMapperMapper.activateDefaultTyping(
-                objectMapperMapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
-        );
+        // 简单类型配置：不启用类型信息（仅用于简单类型，如 List<String>）
+        ObjectMapper simpleTypeMapper = new ObjectMapper();
+        simpleTypeMapper.registerModule(new JavaTimeModule());
+        simpleTypeMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        // 不启用类型信息
 
-        RedisCacheConfiguration objectCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration simpleTypeConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapperMapper)))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(simpleTypeMapper)))
                 .disableCachingNullValues();
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
-                // 预定义需要对象类型信息的缓存
-                .withCacheConfiguration("annex", objectCacheConfig)
-                .withCacheConfiguration("user", objectCacheConfig)
+                // 仅对确定是简单类型的缓存使用不含类型的序列化
+                .withCacheConfiguration("user:permissions", simpleTypeConfig)
                 .build();
     }
 }

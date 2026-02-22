@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import xin.xiuyuan.common.types.CommonStatus;
+import xin.xiuyuan.common.types.DataScopeType;
+
+import java.util.List;
 
 /**
  * 角色表单对象
@@ -41,4 +44,14 @@ public class SysRoleForm {
      * 备注
      */
     private String remark;
+
+    /**
+     * 数据范围（1-5：全部/本部门/本部门及子部门/仅本人/自定义）
+     */
+    private DataScopeType dataScope = DataScopeType.SELF;
+
+    /**
+     * 自定义部门ID列表（当 dataScope = CUSTOM 时使用）
+     */
+    private List<String> customDeptIds;
 }

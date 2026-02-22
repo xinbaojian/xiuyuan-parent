@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import xin.xiuyuan.admin.annotation.DataScope;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.entity.*;
@@ -27,6 +28,7 @@ import xin.xiuyuan.admin.mapper.SysUserMapper;
 import xin.xiuyuan.admin.repository.*;
 import xin.xiuyuan.admin.service.ISysConfigService;
 import xin.xiuyuan.admin.service.ISysUserService;
+import xin.xiuyuan.admin.util.DataScopeHelper;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
 import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
@@ -170,11 +172,15 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
+    @DataScope(deptAlias = "u", deptIdField = "deptId")
     public ApiResult<PageData<SysUserPageVO>> list(SysUserPageQuery pageQuery) {
         Pageable pageable = PageRequest.of(pageQuery.getPage(), pageQuery.getPageSize());
 
         // 构建动态查询条件
         Criteria criteria = new Criteria();
+
+        // 应用数据权限过滤
+        DataScopeHelper.applyDataScope(criteria, "deptId");
 
         // 根据查询参数动态添加条件
         if (StrUtil.isNotBlank(pageQuery.getLoginName())) {
@@ -432,6 +438,4 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         return ApiResult.success("更新头像成功");
     }
-
-
 }
