@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>3.5.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>xin.xiuyuan</groupId>
@@ -19,10 +19,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+
+        <!-- Spring Boot -->
+        <spring-boot.version>3.5.11</spring-boot.version>
+
+        <!-- 第三方库版本 -->
+        <lombok.version>1.18.36</lombok.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <hutool.version>5.8.42</hutool.version>
         <satoken.version>1.44.0</satoken.version>
         <aws.s3.version>2.29.12</aws.s3.version>
+        <commons-io.version>2.17.0</commons-io.version>
+        <jackson.version>2.18.2</jackson.version>
+
         <!-- docker 打包插件 -->
         <docker.plugin.version>0.48.0</docker.plugin.version>
         <!--docker远程仓库-->
@@ -40,11 +49,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -54,21 +59,36 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- MapStruct 依赖 -->
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <optional>true</optional>
+            </dependency>
+
+            <!-- MapStruct -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${org.mapstruct.version}</version>
             </dependency>
-            <!--hutool 工具包-->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+
+            <!-- Hutool 工具包 BOM -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-bom</artifactId>
                 <version>${hutool.version}</version>
                 <type>pom</type>
-                <!-- 注意这里是 import -->
                 <scope>import</scope>
             </dependency>
+
+            <!-- SA-Token 权限认证 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
@@ -79,11 +99,31 @@
                 <artifactId>sa-token-redis-template</artifactId>
                 <version>${satoken.version}</version>
             </dependency>
+
             <!-- AWS S3 SDK (用于RustFS/MinIO/S3) -->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${aws.s3.version}</version>
+            </dependency>
+
+            <!-- Apache Commons IO -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
