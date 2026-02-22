@@ -1,5 +1,6 @@
 package xin.xiuyuan.admin.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +13,7 @@ import xin.xiuyuan.common.common.ApiResult;
 import xin.xiuyuan.common.common.PageData;
 
 /**
- * 系统配置管理
+ * 系统设置/系统配置
  *
  * @author xinbaojian
  * @create 2025-12-17
@@ -32,6 +33,7 @@ public class SysConfigController {
      * @return 新增结果
      */
     @PostMapping
+    @SaCheckPermission("setting:config:add")
     public ApiResult<String> save(@RequestBody @Validated SysConfigForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -47,6 +49,7 @@ public class SysConfigController {
      * @return 修改结果
      */
     @PostMapping("/{id}")
+    @SaCheckPermission("setting:config:edit")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysConfigForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -61,6 +64,7 @@ public class SysConfigController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission("setting:config:delete")
     public ApiResult<String> delete(@PathVariable String id) {
         return configService.delete(id);
     }
@@ -72,6 +76,7 @@ public class SysConfigController {
      * @return 系统配置分页列表
      */
     @GetMapping("/page")
+    @SaCheckPermission("setting:config:list")
     public ApiResult<PageData<SysConfigPageVO>> list(SysConfigPageQuery pageQuery) {
         return configService.list(pageQuery);
     }
