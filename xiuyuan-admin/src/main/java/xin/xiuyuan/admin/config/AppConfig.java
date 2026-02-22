@@ -40,29 +40,39 @@ public class AppConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-        // 配置类型提示，确保反序列化时保留类型信息
-        ObjectMapper redisObjectMapper = new ObjectMapper();
-        redisObjectMapper.registerModule(new JavaTimeModule());
-        redisObjectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        // 启用默认类型信息，确保反序列化时能正确还原类型
-        redisObjectMapper.activateDefaultTyping(
-                redisObjectMapper.getPolymorphicTypeValidator(),
+        // 默认配置：不启用类型信息（用于简单类型缓存，如 List<String>）
+        ObjectMapper defaultObjectMapper = new ObjectMapper();
+        defaultObjectMapper.registerModule(new JavaTimeModule());
+        defaultObjectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(1))
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(defaultObjectMapper)))
+                .disableCachingNullValues();
+
+        // 对象缓存配置：启用类型信息（用于复杂对象缓存，如 SysAnnex）
+        ObjectMapper objectMapperMapper = new ObjectMapper();
+        objectMapperMapper.registerModule(new JavaTimeModule());
+        objectMapperMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        // 只对对象启用类型信息，使用 NON_FINAL 策略
+        objectMapperMapper.activateDefaultTyping(
+                objectMapperMapper.getPolymorphicTypeValidator(),
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
         );
 
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                // 设置默认缓存过期时间
+        RedisCacheConfiguration objectCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(redisObjectMapper)))
-                // 不缓存空值
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapperMapper)))
                 .disableCachingNullValues();
 
         return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(config)
-                // 预定义 annex 缓存的配置
-                .withCacheConfiguration("annex", config)
+                .cacheDefaults(defaultConfig)
+                // 预定义需要对象类型信息的缓存
+                .withCacheConfiguration("annex", objectCacheConfig)
+                .withCacheConfiguration("user", objectCacheConfig)
                 .build();
     }
 }
