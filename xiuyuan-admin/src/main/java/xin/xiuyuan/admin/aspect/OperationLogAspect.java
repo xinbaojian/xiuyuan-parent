@@ -10,6 +10,12 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -42,6 +48,16 @@ public class OperationLogAspect {
     private final SysUserRepository userRepository;
     private final SysDeptRepository deptRepository;
     private final ObjectMapper objectMapper;
+
+    /**
+     * SpEL表达式解析器
+     */
+    private final ExpressionParser parser = new SpelExpressionParser();
+
+    /**
+     * 参数名称发现器
+     */
+    private final ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
     /**
      * 环绕通知: 拦截@OperationLog注解的方法
@@ -88,9 +104,9 @@ public class OperationLogAspect {
             logEntity.setModule(operationLog.module());
             logEntity.setOperationType(operationLog.operationType());
 
-            // 描述处理
+            // 描述处理 - 支持SpEL表达式
             String description = StrUtil.isNotBlank(operationLog.description())
-                    ? operationLog.description()
+                    ? parseDescription(operationLog.description(), point)
                     : operationLog.operationType() + operationLog.module();
             logEntity.setDescription(description);
 
@@ -205,5 +221,58 @@ public class OperationLogAspect {
             ip = ip.split(",")[0].trim();
         }
         return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
+    }
+
+    /**
+     * 解析描述中的SpEL表达式
+     *
+     * @param description 描述模板
+     * @param point       切入点
+     * @return 解析后的描述
+     */
+    private String parseDescription(String description, ProceedingJoinPoint point) {
+        if (!description.contains("#")) {
+            return description;
+        }
+
+        try {
+            MethodSignature signature = (MethodSignature) point.getSignature();
+            String[] parameterNames = nameDiscoverer.getParameterNames(signature.getMethod());
+            Object[] args = point.getArgs();
+
+            if (parameterNames == null || parameterNames.length == 0) {
+                return description;
+            }
+
+            // 创建SpEL上下文
+            EvaluationContext context = new StandardEvaluationContext();
+            for (int i = 0; i < parameterNames.length; i++) {
+                context.setVariable(parameterNames[i], args[i]);
+            }
+
+            // 解析SpEL表达式
+            // 逐个查找并替换 #{变量名} 形式的表达式
+            String result = description;
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("#([a-zA-Z0-9_]+)");
+            java.util.regex.Matcher matcher = pattern.matcher(description);
+
+            while (matcher.find()) {
+                String varName = matcher.group(1);
+                String placeholder = "#" + varName;
+                try {
+                    Object value = context.lookupVariable(varName);
+                    if (value != null) {
+                        result = result.replace(placeholder, value.toString());
+                    }
+                } catch (Exception e) {
+                    // 变量不存在，保持原样
+                }
+            }
+
+            return result;
+        } catch (Exception e) {
+            log.warn("解析SpEL表达式失败: {}", description, e);
+            return description;
+        }
     }
 }
