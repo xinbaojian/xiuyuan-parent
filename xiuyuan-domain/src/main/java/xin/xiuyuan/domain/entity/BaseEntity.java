@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class BaseEntity {
      */
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Indexed
     private LocalDateTime createTime = LocalDateTime.now();
 
     /**
@@ -34,16 +36,19 @@ public class BaseEntity {
      */
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Indexed
     private LocalDateTime updateTime;
 
     /**
      * 创建者
      */
+    @Indexed
     private String createBy;
 
     /**
      * 更新者
      */
+    @Indexed
     private String updateBy;
 
     /**

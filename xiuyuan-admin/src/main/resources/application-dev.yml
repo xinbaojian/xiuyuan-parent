@@ -34,6 +34,7 @@ spring:
           min-idle: 1
     mongodb:
       uri: ${MONGO_URI:mongodb://xinbaojian:JD0PjLYMZd1QPrQHyHWF@localhost:27017/xiuyuan-db?authSource=admin}
+      auto-index-creation: true
 
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:

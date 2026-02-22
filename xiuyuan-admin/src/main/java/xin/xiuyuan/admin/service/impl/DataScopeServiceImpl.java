@@ -152,7 +152,7 @@ public class DataScopeServiceImpl implements DataScopeService {
                     deptIds.add(currentUser.getDeptId());
                     deptIds.addAll(childDepts.stream()
                             .map(SysDept::getId)
-                            .collect(Collectors.toList()));
+                            .toList());
 
                     // 查询这些部门的所有用户
                     return userRepository.findByDeptIdIn(deptIds)
