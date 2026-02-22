@@ -17,7 +17,7 @@ db.sysUser.insertMany([
   status: 'NORMAL',
   deleted: false,
   loginIp: '0:0:0:0:0:0:0:1',
-  loginDate: ISODate('2026-02-22T06:54:56.166Z'),
+  loginDate: ISODate('2026-02-22T12:27:08.503Z'),
   postId: '6954bc7f06c6ecb531481a19',
   roleIds: [
     '6953c65736aaf060e2eef6d5'
@@ -40,7 +40,7 @@ db.sysUser.insertMany([
   status: 'NORMAL',
   deleted: false,
   loginIp: '0:0:0:0:0:0:0:1',
-  loginDate: ISODate('2026-02-22T08:28:33.794Z'),
+  loginDate: ISODate('2026-02-22T12:28:42.547Z'),
   roleIds: [
     '698c50f7d0bd6d57c630a9af'
   ],
@@ -83,8 +83,18 @@ db.sysConfig.insertMany([
   remark: '用户管理-账号初始密码',
   _class: 'xin.xiuyuan.admin.entity.SysConfig'
 }
+,
+{
+  _id: ObjectId('699aec0eaa726d2c4344152f'),
+  configName: '操作日志保留时间',
+  configKey: 'sys.operation.log.retentionDays',
+  configValue: '90',
+  configType: 'Y',
+  remark: '操作日志保留天数，小于等于0表示永久保留',
+  createTime: ISODate('2026-02-22T12:02:39.359Z')
+}
 ]);
-// Exported: 1 / 1 documents
+// Exported: 2 / 2 documents
 
 // === sysPost ===
 db.sysPost.insertMany([
@@ -735,8 +745,54 @@ db.sysMenuPermission.insertMany([
   updateTime: ISODate('2026-02-22T07:09:17.916Z'),
   _class: 'xin.xiuyuan.admin.entity.SysMenuPermission'
 }
+,
+{
+  _id: ObjectId('699af1a5e1d9af2930e6fe9c'),
+  parentId: '00',
+  type: 'MENU',
+  path: '/operationLog',
+  name: 'OperationLog',
+  component: 'Layout',
+  redirect: 'noRedirect',
+  alwaysShow: false,
+  orderNum: 3,
+  status: 'NORMAL',
+  hidden: false,
+  delFlag: false,
+  meta: {
+    title: '操作记录',
+    icon: 'DocumentChecked',
+    defaultOpen: false
+  },
+  createTime: ISODate('2026-02-22T12:08:05.159Z'),
+  updateTime: ISODate('2026-02-22T12:35:31.648Z'),
+  _class: 'xin.xiuyuan.admin.entity.SysMenuPermission'
+}
+,
+{
+  _id: ObjectId('699af1f7e1d9af2930e6fe9d'),
+  parentId: '699af1a5e1d9af2930e6fe9c',
+  type: 'MENU',
+  path: '/logRecord',
+  name: 'LogRecord',
+  component: '/operationLog/index.vue',
+  redirect: 'noRedirect',
+  alwaysShow: false,
+  orderNum: 1,
+  status: 'NORMAL',
+  hidden: false,
+  delFlag: false,
+  meta: {
+    title: '操作日志',
+    icon: 'DocumentChecked',
+    defaultOpen: false,
+    permissions: 'monitor:operation:log:list'
+  },
+  createTime: ISODate('2026-02-22T12:09:27.087Z'),
+  _class: 'xin.xiuyuan.admin.entity.SysMenuPermission'
+}
 ]);
-// Exported: 30 / 30 documents
+// Exported: 32 / 32 documents
 
 // === sysRole ===
 db.sysRole.insertMany([
@@ -776,7 +832,9 @@ db.sysRole.insertMany([
     '699a9f3a38f2b5d260c02e46',
     '699aa59e38f2b5d260c02e47',
     '699aa5b138f2b5d260c02e48',
-    '699aa5c438f2b5d260c02e49'
+    '699aa5c438f2b5d260c02e49',
+    '699af1a5e1d9af2930e6fe9c',
+    '699af1f7e1d9af2930e6fe9d'
   ],
   dataScope: 'ALL',
   createTime: ISODate('2025-12-31T06:02:39.056Z'),
@@ -801,11 +859,12 @@ db.sysRole.insertMany([
     '698c4532d4fb89794d6ced93',
     '698c4699d0bd6d57c630a99f',
     '698c46b1d0bd6d57c630a9a0',
-    '698c46d5d0bd6d57c630a9a1'
+    '698c46d5d0bd6d57c630a9a1',
+    '6954bc7f06c6ecb531481a1c'
   ],
   dataScope: 'SELF',
   createTime: ISODate('2026-02-11T09:50:47.854Z'),
-  updateTime: ISODate('2026-02-22T09:22:06.047Z'),
+  updateTime: ISODate('2026-02-22T11:48:24.941Z'),
   createBy: '6953be5fd024de0401549bc8',
   updateBy: '6953be5fd024de0401549bc8',
   _class: 'xin.xiuyuan.admin.entity.SysRole'

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.user.*;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.admin.vo.SysUserPageVO;
@@ -36,6 +37,7 @@ public class SysUserController {
      */
     @PostMapping
     @SaCheckPermission(value = "setting:user:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "用户管理", operationType = "新增", description = "新增用户")
     public ApiResult<String> save(@RequestBody @Validated SysUserCreateForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -52,6 +54,7 @@ public class SysUserController {
      */
     @PostMapping("/{id}")
     @SaCheckPermission(value = "setting:user:update", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "用户管理", operationType = "修改", description = "修改用户")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysUserForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -67,6 +70,7 @@ public class SysUserController {
      */
     @DeleteMapping("/{id}")
     @SaCheckPermission(value = "setting:user:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "用户管理", operationType = "删除", description = "删除用户ID: #id")
     public ApiResult<String> delete(@PathVariable String id) {
         return userService.delete(id);
     }
@@ -98,6 +102,7 @@ public class SysUserController {
      */
     @PostMapping("/resetPwd/{id}")
     @SaCheckPermission(value = "setting:user:resetPwd", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "用户管理", operationType = "重置密码", description = "重置用户ID: #id 的密码")
     public ApiResult<String> resetPwd(@PathVariable String id, @RequestBody @Validated UserResetPwd form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -127,6 +132,7 @@ public class SysUserController {
      * 修改用户资料
      */
     @PutMapping("/avatar/{id}")
+    @OperationLog(module = "用户管理", operationType = "修改资料", description = "修改用户ID: #id 的资料")
     public ApiResult<String> updateAvatar(@PathVariable String id, @RequestBody @Validated UserUpdateProfile form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());

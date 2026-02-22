@@ -43,7 +43,7 @@ docker exec "$CONTAINER_NAME" mongosh \
     "$DB_NAME" \
     --eval '
 var cols = db.getCollectionNames().filter(function(n) {
-    return !n.startsWith("system.") && n !== "sysAnnex";
+    return !n.startsWith("system.") && n !== "sysAnnex" && n !== "sysOperationLog";
 });
 
 print("// MongoDB Init Data");

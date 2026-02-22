@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.dept.SysDeptForm;
 import xin.xiuyuan.admin.dto.dept.SysDeptPageQuery;
 import xin.xiuyuan.admin.service.ISysDeptService;
@@ -40,6 +41,7 @@ public class SysDeptController {
      */
     @PostMapping
     @SaCheckPermission(value = "sys:dept:add")
+    @OperationLog(module = "部门管理", operationType = "新增", description = "新增部门")
     public ApiResult<String> save(@RequestBody @Validated SysDeptForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -56,6 +58,7 @@ public class SysDeptController {
      */
     @PostMapping("/{id}")
     @SaCheckPermission(value = "sys:dept:edit")
+    @OperationLog(module = "部门管理", operationType = "修改", description = "修改部门")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysDeptForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -71,6 +74,7 @@ public class SysDeptController {
      */
     @DeleteMapping("/{id}")
     @SaCheckPermission(value = "sys:dept:remove")
+    @OperationLog(module = "部门管理", operationType = "删除", description = "删除部门ID: #id")
     public ApiResult<String> delete(@PathVariable String id) {
         return deptService.delete(id);
     }

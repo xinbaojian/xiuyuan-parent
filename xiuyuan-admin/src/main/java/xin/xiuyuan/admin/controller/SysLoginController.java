@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.login.LoginForm;
 import xin.xiuyuan.admin.service.ISysUserService;
 import xin.xiuyuan.common.common.ApiResult;
@@ -32,6 +33,7 @@ public class SysLoginController {
      * @param loginForm 登录表单
      */
     @PostMapping("/login")
+    @OperationLog(module = "登录", operationType = "登录", description = "用户登录")
     public ApiResult<?> login(@RequestBody @Validated LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -43,6 +45,7 @@ public class SysLoginController {
      * 登出
      */
     @PostMapping("/logout")
+    @OperationLog(module = "登出", operationType = "登出", description = "用户登出")
     public ApiResult<?> logout() {
         return userService.logout();
     }

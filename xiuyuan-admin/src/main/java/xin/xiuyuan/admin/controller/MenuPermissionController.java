@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.menu.MenuPermissionForm;
 import xin.xiuyuan.admin.service.IMenuPermissionService;
 import xin.xiuyuan.admin.vo.menu.MenuTreeVO;
@@ -37,6 +38,7 @@ public class MenuPermissionController {
      */
     @PostMapping
     @SaCheckPermission(value = "setting:menu:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "菜单管理", operationType = "新增", description = "新增菜单")
     public ApiResult<String> save(@RequestBody @Validated MenuPermissionForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -53,6 +55,7 @@ public class MenuPermissionController {
      */
     @PostMapping("/{id}")
     @SaCheckPermission(value = "setting:menu:edit", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "菜单管理", operationType = "修改", description = "修改菜单")
     public ApiResult<String> update(@PathVariable String id,
                                     @RequestBody @Validated MenuPermissionForm form,
                                     BindingResult bindingResult) {
@@ -70,6 +73,7 @@ public class MenuPermissionController {
      */
     @DeleteMapping("/{id}")
     @SaCheckPermission(value = "setting:menu:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "菜单管理", operationType = "删除", description = "删除菜单")
     public ApiResult<String> delete(@PathVariable String id) {
         return menuPermissionService.delete(id);
     }

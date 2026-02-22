@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.config.SysConfigForm;
 import xin.xiuyuan.admin.dto.config.SysConfigPageQuery;
 import xin.xiuyuan.admin.service.ISysConfigService;
@@ -34,6 +35,7 @@ public class SysConfigController {
      */
     @PostMapping
     @SaCheckPermission("setting:config:add")
+    @OperationLog(module = "系统配置", operationType = "新增", description = "新增系统配置")
     public ApiResult<String> save(@RequestBody @Validated SysConfigForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -50,6 +52,7 @@ public class SysConfigController {
      */
     @PostMapping("/{id}")
     @SaCheckPermission("setting:config:edit")
+    @OperationLog(module = "系统配置", operationType = "修改", description = "修改系统配置")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysConfigForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -65,6 +68,7 @@ public class SysConfigController {
      */
     @DeleteMapping("/{id}")
     @SaCheckPermission("setting:config:delete")
+    @OperationLog(module = "系统配置", operationType = "删除", description = "删除系统配置ID: #id")
     public ApiResult<String> delete(@PathVariable String id) {
         return configService.delete(id);
     }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import xin.xiuyuan.admin.annotation.OperationLog;
 import xin.xiuyuan.admin.dto.role.SysRoleForm;
 import xin.xiuyuan.admin.dto.role.SysRolePageQuery;
 import xin.xiuyuan.admin.service.ISysRoleService;
@@ -40,6 +41,7 @@ public class SysRoleController {
      */
     @PostMapping
     @SaCheckPermission(value = "setting:role:add", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "角色管理", operationType = "新增", description = "新增角色")
     public ApiResult<String> save(@RequestBody @Validated SysRoleForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -56,6 +58,7 @@ public class SysRoleController {
      */
     @PostMapping("/{id}")
     @SaCheckPermission(value = "setting:role:update", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "角色管理", operationType = "修改", description = "修改角色")
     public ApiResult<String> update(@PathVariable String id, @RequestBody @Validated SysRoleForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ApiResult.error(bindingResult.getAllErrors().getFirst().getDefaultMessage());
@@ -71,6 +74,7 @@ public class SysRoleController {
      */
     @DeleteMapping("/{id}")
     @SaCheckPermission(value = "setting:role:delete", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "角色管理", operationType = "删除", description = "删除角色ID: #id")
     public ApiResult<String> delete(@PathVariable String id) {
         return sysRoleService.delete(id);
     }
@@ -106,6 +110,7 @@ public class SysRoleController {
      */
     @PutMapping("/{id}/permission")
     @SaCheckPermission(value = "setting:role:permission:set", orRole = {RoleConstant.ROLE_ADMIN}, mode = SaMode.OR)
+    @OperationLog(module = "角色管理", operationType = "设置权限", description = "设置角色ID: #id 的权限")
     public ApiResult<String> setPermission(@PathVariable String id, @RequestBody List<String> permissions) {
         return sysRoleService.setPermission(id, permissions);
     }
