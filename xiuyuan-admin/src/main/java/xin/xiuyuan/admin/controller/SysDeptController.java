@@ -20,7 +20,7 @@ import xin.xiuyuan.common.types.CommonStatus;
 import java.util.List;
 
 /**
- * 部门管理
+ * 系统设置/部门管理
  *
  * @author xinbaojian
  * @create 2025-12-15 18:03
