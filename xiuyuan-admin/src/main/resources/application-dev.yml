@@ -86,6 +86,9 @@ file-storage:
     # 读取超时时间（毫秒）
     read-timeout: 60000
 
+bark:
+  url: https://bark.xiuyuan.xin/ivQqRhBtfDH7Upywu7nau9
+
 logging:
   level:
     xin.xiuyuan.admin: debug

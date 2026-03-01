@@ -35,6 +35,14 @@
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
             <artifactId>hutool-extra</artifactId>
         </dependency>
         <!-- Jackson (使用父 POM 管理的版本) -->
