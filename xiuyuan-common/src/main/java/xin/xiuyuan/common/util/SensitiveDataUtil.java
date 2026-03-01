@@ -25,10 +25,13 @@ public class SensitiveDataUtil {
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     private static final String MASK = "******";
 
-    // 需要跳过的包名（Spring 框架相关的类）
+    // 需要跳过的包名（框架相关的类）
     private static final Set<String> SKIP_PACKAGES = Set.of(
             "org.springframework",
             "org.hibernate",
+            "org.apache.catalina",
+            "jakarta.servlet",
+            "javax.servlet",
             "java.lang"
     );
 
@@ -114,8 +117,46 @@ public class SensitiveDataUtil {
      * @return true-跳过，false-不跳过
      */
     private static boolean shouldSkip(Class<?> clazz) {
+        // 检查包名
         String packageName = clazz.getPackageName();
-        return SKIP_PACKAGES.stream().anyMatch(packageName::startsWith);
+        if (SKIP_PACKAGES.stream().anyMatch(packageName::startsWith)) {
+            return true;
+        }
+
+        // 检查常见的不可序列化接口
+        // 检查类本身实现的接口
+        if (hasUnserializableInterface(clazz)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 检查类是否实现了不可序列化的接口
+     *
+     * @param clazz 类
+     * @return true-包含不可序列化接口，false-不包含
+     */
+    private static boolean hasUnserializableInterface(Class<?> clazz) {
+        // 检查所有接口
+        for (Class<?> iface : clazz.getInterfaces()) {
+            String interfaceName = iface.getName();
+            // Servlet 相关接口
+            if (interfaceName.contains("ServletRequest") ||
+                    interfaceName.contains("ServletResponse") ||
+                    interfaceName.contains("HttpSession")) {
+                return true;
+            }
+        }
+
+        // 递归检查父类
+        Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null && superClass != Object.class) {
+            return hasUnserializableInterface(superClass);
+        }
+
+        return false;
     }
 
     /**

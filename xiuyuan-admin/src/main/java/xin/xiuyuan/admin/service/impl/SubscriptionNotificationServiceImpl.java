@@ -1,5 +1,6 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,10 @@ public class SubscriptionNotificationServiceImpl implements ISubscriptionNotific
                 .setBody(subscription.getSubscriptionName() + " 的订阅还有 " + remainingDays + " 天到期")
                 .setLevel(BarkUtils.BarkLevel.CRITICAL.getLevel())
                 .setSound(BarkUtils.BarkSound.ALARM.getSound());
-        BarkUtils.sendPost(barkProperties.getUrl(), barkPostBody);
+        if (CollUtil.isNotEmpty(barkProperties.getUrlList())) {
+            barkProperties.getUrlList().forEach(url -> {
+                BarkUtils.sendPost(url, barkPostBody);
+            });
+        }
     }
 }

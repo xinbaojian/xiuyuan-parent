@@ -10,7 +10,8 @@ install: clean
 
 build: install
 	cd xiuyuan-admin && mvn docker:build
-push:
+
+push: install
 	cd xiuyuan-admin && mvn docker:build docker:push
 
 

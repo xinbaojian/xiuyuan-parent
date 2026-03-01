@@ -36,7 +36,7 @@
         <docker.plugin.version>0.48.0</docker.plugin.version>
         <!--docker远程仓库-->
         <docker.repository>registry.cn-hangzhou.aliyuncs.com/xinbaojian/</docker.repository>
-        <docker.image.name>${project.artifactId}</docker.image.name>
+        <docker.image.name>reminder-admin</docker.image.name>
     </properties>
     <modules>
         <module>xiuyuan-common</module>

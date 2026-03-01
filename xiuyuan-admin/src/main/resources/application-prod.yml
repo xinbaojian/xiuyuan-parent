@@ -87,7 +87,8 @@ file-storage:
     read-timeout: 60000
 
 bark:
-  url: https://bark.xiuyuan.xin/ivQqRhBtfDH7Upywu7nau9
+  url-list:
+    - https://bark.xiuyuan.xin/ivQqRhBtfDH7Upywu7nau9
 
 logging:
   level:

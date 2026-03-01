@@ -1,5 +1,6 @@
 package xin.xiuyuan.admin.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,11 @@ public class BirthdayNotificationServiceImpl implements IBirthdayNotificationSer
         barkPostBody.setTitle("生日提醒")
                 .setSubtitle("还有 " + daysUntilBirthday + " 天")
                 .setBody(birthday.getName() + " 的生日还有 " + daysUntilBirthday + " 天");
-        BarkUtils.sendPost(barkProperties.getUrl(), barkPostBody);
+        if (CollUtil.isNotEmpty(barkProperties.getUrlList())) {
+            barkProperties.getUrlList().forEach(url -> {
+                BarkUtils.sendPost(url, barkPostBody);
+            });
+        }
+
     }
 }
