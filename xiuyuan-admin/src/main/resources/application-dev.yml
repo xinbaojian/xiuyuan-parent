@@ -57,7 +57,7 @@ sa-token:
 
 file-storage:
   # 是否启用文件存储服务（默认：true）
-  enabled: true
+  enabled: false
   # 存储类型：rustfs, minio, s3, aliyun-oss, local
   type: rustfs
   # 默认存储桶名称
