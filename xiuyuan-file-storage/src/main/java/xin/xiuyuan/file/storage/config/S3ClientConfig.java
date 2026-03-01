@@ -1,6 +1,5 @@
 package xin.xiuyuan.file.storage.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,6 @@ import java.time.Duration;
  */
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
 @ConditionalOnProperty(
         prefix = "file-storage",
         name = "enabled",
@@ -31,6 +29,10 @@ import java.time.Duration;
 public class S3ClientConfig {
 
     private final FileStorageProperties properties;
+
+    public S3ClientConfig(FileStorageProperties properties) {
+        this.properties = properties;
+    }
 
     /**
      * 创建 S3 客户端 Bean

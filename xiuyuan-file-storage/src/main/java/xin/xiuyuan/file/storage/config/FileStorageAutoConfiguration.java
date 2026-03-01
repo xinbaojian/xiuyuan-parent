@@ -28,20 +28,12 @@ import xin.xiuyuan.file.storage.service.impl.S3FileStorageServiceImpl;
 @ComponentScan(basePackages = "xin.xiuyuan.file.storage")
 public class FileStorageAutoConfiguration {
 
-    private final FileStorageProperties properties;
-    private final S3Client s3Client;
-
-    public FileStorageAutoConfiguration(FileStorageProperties properties, S3Client s3Client) {
-        this.properties = properties;
-        this.s3Client = s3Client;
-    }
-
     /**
      * 配置文件存储服务
      * 根据配置的存储类型创建相应的实现
      */
     @Bean
-    public FileStorageService fileStorageService() {
+    public FileStorageService fileStorageService(FileStorageProperties properties, S3Client s3Client) {
         FileStorageType type = properties.getType();
 
         if (type == null) {

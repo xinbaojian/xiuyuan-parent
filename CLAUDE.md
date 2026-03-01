@@ -73,3 +73,7 @@ login is enabled - same account can login from multiple devices.
 
 All MongoDB entities extend base classes with common fields. Repositories use Spring Data MongoDB with custom query
 methods where needed. Redis is used for caching with connection pooling configured.
+
+## 交流语言
+
+使用简体中文进行输出

@@ -2,6 +2,7 @@ package xin.xiuyuan.file.storage.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,12 @@ import xin.xiuyuan.file.storage.service.ISysAnnexService;
 @RestController
 @RequestMapping("/file-store/upload")
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "file-storage",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class FileUploadController {
 
     private final FileStorageService fileStorageService;

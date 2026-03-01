@@ -3,6 +3,7 @@ package xin.xiuyuan.file.storage.service.impl;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import xin.xiuyuan.domain.entity.SysAnnex;
@@ -20,6 +21,12 @@ import xin.xiuyuan.file.storage.service.ISysAnnexService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+        prefix = "file-storage",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 public class SysAnnexServiceImpl implements ISysAnnexService {
 
     private final SysAnnexRepository annexRepository;

@@ -311,7 +311,7 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         infoVo.setUsername(user.getUsername());
         if (StrUtil.isNotBlank(user.getAvatar())) {
-            SysAnnex annex = annexService.findById(user.getAvatar());
+            SysAnnex annex = annexService != null ? annexService.findById(user.getAvatar()) : null;
             if (annex != null) {
                 infoVo.setAvatar(annex.getObjectUrl());
             }
@@ -431,8 +431,10 @@ public class SysUserServiceImpl implements ISysUserService {
         SysUser user = userRepository.findById(form.getId()).orElse(null);
         Assert.notNull(user, "用户不存在");
         if (StrUtil.isNotBlank(form.getAvatar())) {
-            SysAnnex annex = annexService.findById(form.getAvatar());
-            Assert.notNull(annex, "附件不存在");
+            if (annexService != null) {
+                SysAnnex annex = annexService.findById(form.getAvatar());
+                Assert.notNull(annex, "附件不存在");
+            }
             user.setAvatar(form.getAvatar());
             userRepository.save(user);
         }
