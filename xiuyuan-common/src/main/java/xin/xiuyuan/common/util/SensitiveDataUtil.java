@@ -1,4 +1,4 @@
-package xin.xiuyuan.common.utils;
+package xin.xiuyuan.common.util;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.JsonNode;

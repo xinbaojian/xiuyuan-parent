@@ -28,7 +28,7 @@ import xin.xiuyuan.admin.repository.SysDeptRepository;
 import xin.xiuyuan.admin.repository.SysOperationLogRepository;
 import xin.xiuyuan.admin.repository.SysUserRepository;
 import xin.xiuyuan.common.types.OperationStatus;
-import xin.xiuyuan.common.utils.SensitiveDataUtil;
+import xin.xiuyuan.common.util.SensitiveDataUtil;
 
 import java.time.LocalDateTime;
 
