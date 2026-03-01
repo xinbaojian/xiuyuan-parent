@@ -3,6 +3,7 @@ package xin.xiuyuan.common.util;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,16 @@ import java.util.Set;
 public class SensitiveDataUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     private static final String MASK = "******";
+
+    // 需要跳过的包名（Spring 框架相关的类）
+    private static final Set<String> SKIP_PACKAGES = Set.of(
+            "org.springframework",
+            "org.hibernate",
+            "java.lang"
+    );
 
     /**
      * 过滤敏感字段
@@ -60,12 +69,53 @@ public class SensitiveDataUtil {
         }
 
         try {
-            String json = OBJECT_MAPPER.writeValueAsString(args);
+            // 过滤掉框架相关的对象，只保留业务对象
+            Object[] filteredArgs = filterFrameworkObjects(args);
+            String json = OBJECT_MAPPER.writeValueAsString(filteredArgs);
             return filterSensitiveFields(json, sensitiveFields);
         } catch (Exception e) {
             log.warn("参数序列化失败", e);
             return "参数序列化失败";
         }
+    }
+
+    /**
+     * 过滤掉框架相关的对象
+     *
+     * @param args 原始参数数组
+     * @return 过滤后的参数数组
+     */
+    private static Object[] filterFrameworkObjects(Object[] args) {
+        if (args == null || args.length == 0) {
+            return args;
+        }
+
+        Object[] filtered = new Object[args.length];
+        int index = 0;
+
+        for (Object arg : args) {
+            if (arg == null) {
+                filtered[index++] = null;
+            } else if (shouldSkip(arg.getClass())) {
+                // 跳过框架对象，用字符串代替
+                filtered[index++] = "[Framework Object: " + arg.getClass().getSimpleName() + "]";
+            } else {
+                filtered[index++] = arg;
+            }
+        }
+
+        return filtered;
+    }
+
+    /**
+     * 判断是否应该跳过该对象
+     *
+     * @param clazz 对象类型
+     * @return true-跳过，false-不跳过
+     */
+    private static boolean shouldSkip(Class<?> clazz) {
+        String packageName = clazz.getPackageName();
+        return SKIP_PACKAGES.stream().anyMatch(packageName::startsWith);
     }
 
     /**
