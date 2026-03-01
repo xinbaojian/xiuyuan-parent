@@ -32,7 +32,7 @@ public class SubscriptionReminderTask {
      * 订阅到期提醒检查
      * 每天凌晨0点执行
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 1 7 * * ?") // 每天凌晨7点1分执行
     public void checkSubscriptionExpiry() {
         log.info("开始检查订阅到期提醒");
 
