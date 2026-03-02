@@ -28,65 +28,12 @@ public class BirthdayReminderTask {
     private final IBirthdayNotificationService notificationService;
 
     /**
-     * 每天更新距离生日天数
-     * 每天凌晨0点执行
-     */
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void updateDaysUntilBirthday() {
-        log.info("开始更新距离生日天数");
-
-        try {
-            // 查询所有生日记录
-            List<SysBirthday> birthdays = birthdayRepository.findAll();
-
-            if (birthdays.isEmpty()) {
-                log.info("没有生日记录需要更新");
-                return;
-            }
-
-            LocalDate today = LocalDate.now();
-            int updatedCount = 0;
-
-            for (SysBirthday birthday : birthdays) {
-                if (birthday.getNextBirthday() == null) {
-                    continue;
-                }
-
-                // 计算距离下次生日天数
-                int daysUntil = (int) java.time.temporal.ChronoUnit.DAYS.between(today, birthday.getNextBirthday());
-
-                // 计算年龄
-                int age = LunarCalendarUtil.calculateAge(birthday.getBirthDate());
-                birthday.setAge(age);
-
-                // 如果生日已过了,计算下一次生日
-                if (daysUntil < 0) {
-                    LocalDate nextBirthday = LunarCalendarUtil.calculateNextBirthday(
-                            birthday.getBirthDate(),
-                            birthday.getBirthdayType(),
-                            birthday.getIsLeapMonth() != null ? birthday.getIsLeapMonth() : false
-                    );
-                    birthday.setNextBirthday(nextBirthday);
-
-                    // 重新计算距离生日天数
-                    daysUntil = (int) java.time.temporal.ChronoUnit.DAYS.between(today, nextBirthday);
-                }
-
-                birthday.setDaysUntilBirthday(daysUntil);
-                birthdayRepository.save(birthday);
-                updatedCount++;
-            }
-
-            log.info("更新距离生日天数完成, 共更新 {} 个记录", updatedCount);
-
-        } catch (Exception e) {
-            log.error("更新距离生日天数任务执行失败", e);
-        }
-    }
-
-    /**
-     * 生日提醒检查
+     * 生日提醒检查及数据更新
      * 每天早上7点执行
+     * 功能：
+     * 1. 更新距离生日天数
+     * 2. 更新年龄
+     * 3. 检查并发送生日提醒
      */
     @Scheduled(cron = "0 0 7 * * ?")
     public void checkBirthdayReminder() {
