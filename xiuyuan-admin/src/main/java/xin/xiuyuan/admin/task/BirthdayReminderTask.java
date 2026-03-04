@@ -35,7 +35,8 @@ public class BirthdayReminderTask {
      * 2. 更新年龄
      * 3. 检查并发送生日提醒
      */
-    @Scheduled(cron = "0 0 7 * * ?")
+//    @Scheduled(cron = "0 0 7 * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void checkBirthdayReminder() {
         log.info("开始检查生日提醒");
 
@@ -75,12 +76,13 @@ public class BirthdayReminderTask {
 
                     // 重新计算距离生日天数
                     daysUntil = (int) java.time.temporal.ChronoUnit.DAYS.between(today, nextBirthday);
+                    LocalDate originBirthday = birthday.getNextBirthday();
                     birthday.setDaysUntilBirthday(daysUntil);
 
                     birthdayRepository.save(birthday);
                     updatedCount++;
                     log.info("生日已过,更新下次生日: [{}], 原生日: [{}], 新生日: [{}], 距离天数: [{}], 年龄: [{}]",
-                            birthday.getName(), birthday.getNextBirthday(), nextBirthday, daysUntil, age);
+                            birthday.getName(), originBirthday, nextBirthday, daysUntil, age);
                 } else {
                     // 只更新年龄和距离天数
                     birthday.setDaysUntilBirthday(daysUntil);
